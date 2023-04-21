@@ -17,12 +17,13 @@ namespace WashEntrance_V1
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Logger.WriteLog("Starting Application");
+            Logger.WriteLog("Starting Wash Entrance Controller");
             Thread SeaLevelBackground = new Thread(SeaLevelThread.SeaLevelTask);
             SeaLevelBackground.IsBackground = true;
             SeaLevelBackground.Start();
 
             Application.Run(new Form1());
+            Logger.WriteLog("Ending Wash Entrance Controller");
         }
     }
 }

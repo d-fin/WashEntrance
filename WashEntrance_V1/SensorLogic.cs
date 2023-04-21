@@ -54,6 +54,7 @@ namespace WashEntrance_V1
             int errnum;
 
             //start of the main error handler section
+            // The below try catch is just starting and connecting to the SeaLevel device
             try
             {
             //reference point for return on device disconnection
@@ -68,6 +69,7 @@ namespace WashEntrance_V1
                     //exit loop if device loads successfully
                     if (errno == 0)
                     {
+                        Logger.WriteLog("Successfully Connected to SeaLevel Device");
                         break;
                     }
 
@@ -78,32 +80,29 @@ namespace WashEntrance_V1
                         switch (errno)
                         {
                             case -20:
-                                MessageBox.Show("SeaLevel Device Not Connected! ", "SeaLevel Error",
-                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                //MessageBox.Show("SeaLevel Device Not Connected! ", "SeaLevel Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                Logger.WriteLog($"Error # : {errno} - Ethernet - Could not resolve Host address.");
                                 break;
-
+                            case -21:
+                                Logger.WriteLog($"Error # : {errno} - Ethernet - Host refused or unavailable.");
+                                break;
+                            case -22:
+                                Logger.WriteLog($"Error # : {errno} - Ethernet - Could not acquire free socket.");
+                                break;
                             default:
-                                MessageBox.Show("Sealevel Device Error Number: " + errno.ToString(), "Startup Error",
-                                MessageBoxButtons.OK, MessageBoxIcon.Error);
-
+                                //MessageBox.Show("Sealevel Device Error Number: " + errno.ToString(), "Startup Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                Logger.WriteLog($"Error # : {errno}");
                                 break;
                         }
                     }
                     //thread sleep 5 seconds
                     Thread.Sleep(5000);
-                }
-                while (true);
+                } while (true);
 
                 //set all outputs to off at initial load
                 SeaMaxOut[0] = 0;
                 errnum = SeaMAX_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaMaxOut);
 
-
-                //configure Output control variable to set input 1 state to ON
-                //SeaMaxOut[0] = 1;
-
-                //send output control command
-                //errnum = SeaMAX_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaMaxOut);
 
                 //Sealevel Device Active monitoring Loop
                 do
@@ -116,7 +115,7 @@ namespace WashEntrance_V1
                         errnum = SeaMAX_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaMaxOut);
 
                         int errno = SeaMAX_DeviceHandler.SM_Close();
-
+                        Logger.WriteLog($"Exiting Application - Killing thread {Thread.CurrentThread}");
                         Thread.Sleep(50);
                         Application.ExitThread();
                         break;
@@ -236,8 +235,6 @@ namespace WashEntrance_V1
                                     SeaMaxOut[0] = 0;
                                     errnum = SeaMAX_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaMaxOut);
                                     ForkUpBool = false;
-
-                                    //change case
                                     RollerCase = 5;
                                 }
                             }
@@ -247,7 +244,6 @@ namespace WashEntrance_V1
                             //Wait for TunnelWatch to signal Roller Down then return to start of cycle
                             if (!SLInput1Status)
                             {
-                                //change case
                                 RollerCase = 1;
                             }
                             break;
@@ -350,10 +346,8 @@ namespace WashEntrance_V1
             }
             catch (Exception ex)
             {
-                // make sure I catch all exceptions and log here - especially -10070 because thats a socket error. 
-                // will need to kill thread. 
-                MessageBox.Show("Sealevel Device Error: " + ex.Message, "Startup Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Logger.WriteLog($"Exception : {ex}");
+                //MessageBox.Show("Sealevel Device Error: " + ex.Message, "Startup Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         #endregion
