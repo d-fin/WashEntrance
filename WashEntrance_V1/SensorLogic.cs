@@ -38,7 +38,53 @@ namespace WashEntrance_V1
             return (b & (1 << bitNumber)) != 0;
         }
 
-        //SeaLevel Method 
+        //Start SeaLevel Device
+        public static bool SLDeviceStart(SeaMAX SeaMAX_DeviceHandler)
+        {
+            try
+            {
+                do
+                {
+                    int errno = SeaMAX_DeviceHandler.SM_Open("192.168.1.176");
+
+                    //exit loop if device loads successfully
+                    if (errno == 0)
+                    {
+                        Logger.WriteLog("Successfully Connected to SeaLevel Device");
+                        break;
+                    }
+
+                    if (errno < 0)
+                    {
+                        switch (errno)
+                        {
+                            case -20:
+                                Logger.WriteLog($"Error # : {errno} - Ethernet - Could not resolve Host address. (IP Address incorrect)");
+                                break;
+                            case -21:
+                                Logger.WriteLog($"Error # : {errno} - Ethernet - Host refused or unavailable. SeaLevel Device Restart Required.");
+                                break;
+                            case -22:
+                                Logger.WriteLog($"Error # : {errno} - Ethernet - Could not acquire free socket.");
+                                break;
+                            default:
+                                Logger.WriteLog($"Error # : {errno}");
+                                break;
+                        }
+                    }
+                    Thread.Sleep(5000);
+                } while (true);
+            }
+            catch(Exception e)
+            {
+                Logger.WriteLog($"SeaLevel Device connection failed. Exception: {e}");
+                return false;  
+            }
+
+            return true; 
+        }
+
+        // Main SeaLevel Task
         public static void SeaLevelTask()
         {
             #region Sealevel Device
@@ -60,54 +106,32 @@ namespace WashEntrance_V1
             //reference point for return on device disconnection
             RestartConnection:
 
-                //Loop to handle load/reload of SeaLevel Device upon USB connect/disconnect
-                do
+                while(true)
                 {
-                    //open the connection 
-                    int errno = SeaMAX_DeviceHandler.SM_Open("192.168.0.145");
-
-                    //exit loop if device loads successfully
-                    if (errno == 0)
-                    {
-                        Logger.WriteLog("Successfully Connected to SeaLevel Device");
-                        break;
+                    int i = 0; 
+                    bool connected = SLDeviceStart(SeaMAX_DeviceHandler);
+                    if (connected == true) 
+                    { 
+                        break; 
                     }
-
-                    if (errno < 0)
+                    else
                     {
-                        // ERROR # -10070 IS A SOCKET ERROR 
-                        // LOG AND RESTART SEALEVEL DEVICE!
-                        switch (errno)
+                        i++; 
+                        if (i == 100)
                         {
-                            case -20:
-                                //MessageBox.Show("SeaLevel Device Not Connected! ", "SeaLevel Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                Logger.WriteLog($"Error # : {errno} - Ethernet - Could not resolve Host address.");
-                                break;
-                            case -21:
-                                Logger.WriteLog($"Error # : {errno} - Ethernet - Host refused or unavailable.");
-                                break;
-                            case -22:
-                                Logger.WriteLog($"Error # : {errno} - Ethernet - Could not acquire free socket.");
-                                break;
-                            default:
-                                //MessageBox.Show("Sealevel Device Error Number: " + errno.ToString(), "Startup Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                Logger.WriteLog($"Error # : {errno}");
-                                break;
+                            Logger.WriteLog($"{i} attempts have been made to connect to the SeaLevel Device, Manually restart device");
                         }
                     }
-                    //thread sleep 5 seconds
-                    Thread.Sleep(5000);
-                } while (true);
-
+                }
+                
                 //set all outputs to off at initial load
                 SeaMaxOut[0] = 0;
                 errnum = SeaMAX_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaMaxOut);
 
-
                 //Sealevel Device Active monitoring Loop
                 do
                 {
-                    //handle closing Sealevel Handle on Exit
+                    // close device and exit 
                     if (Form1.Shutdown)
                     {
                         //set all outputs to off at initial load
@@ -115,7 +139,7 @@ namespace WashEntrance_V1
                         errnum = SeaMAX_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaMaxOut);
 
                         int errno = SeaMAX_DeviceHandler.SM_Close();
-                        Logger.WriteLog($"Exiting Application - Killing thread {Thread.CurrentThread}");
+                        Logger.WriteLog($"Killing thread - {Thread.CurrentThread}");
                         Thread.Sleep(50);
                         Application.ExitThread();
                         break;
@@ -126,8 +150,7 @@ namespace WashEntrance_V1
                     //handle sealevel device error
                     if (errnum < 0)
                     {
-                        MessageBox.Show("Sealevel Device Error Number: " + errnum.ToString(), "Startup Error",
-                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        Logger.WriteLog($"SeaLevel Device Error {errnum}");
                         break;
                     }
 
@@ -151,21 +174,17 @@ namespace WashEntrance_V1
                      * 
                      */
 
-                    //RollerCase
                     switch (RollerCase)
                     {
                         case 1:
                             //Wait for Roller Call signal from TunnelWatch + 24VAC Relay energized in TunnelWatch Box feeding power to fork circuit
                             if (SLInput1Status)
                             {
-                                //change variables
                                 RollerCase = 2;
                                 RollerCounter = 0;
                             }
                             break;
-
                         case 2:
-
                             //debounce roller call input to ensure no false triggering ~100ms
                             if (RollerCounter > 10)
                             {
@@ -188,13 +207,10 @@ namespace WashEntrance_V1
                             }
                             else
                             {
-                                //increment counter
                                 RollerCounter = RollerCounter + 1;
                             }
                             break;
-
                         case 3:
-                            //Wait for RollerReady Signal
                             if (RollerReady)
                             {
                                 //check fork position and raise if necessary
@@ -207,15 +223,13 @@ namespace WashEntrance_V1
                                     //send output control command
                                     errnum = SeaMAX_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaMaxOut);
                                     ForkUpBool = true;
+                                    Logger.WriteLog("Fork Up");
                                     // this is where voice will go if not wired into something different 
                                 }
-                                //change case
                                 RollerCase = 4;
                             }
                             break;
-
                         case 4:
-                            //Wait for change in RollerReady
                             if (!RollerReady)
                             {
                                 //check if more rollers are armed
@@ -224,8 +238,6 @@ namespace WashEntrance_V1
                                     //adjust counters
                                     RollersUp = RollersUp + 1;
                                     RollersLeft = RollersLeft - 1;
-
-                                    //change case
                                     RollerCase = 3;
                                 }
                                 else
@@ -235,6 +247,7 @@ namespace WashEntrance_V1
                                     SeaMaxOut[0] = 0;
                                     errnum = SeaMAX_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaMaxOut);
                                     ForkUpBool = false;
+                                    Logger.WriteLog("Fork Down");
                                     RollerCase = 5;
                                 }
                             }
@@ -247,22 +260,19 @@ namespace WashEntrance_V1
                                 RollerCase = 1;
                             }
                             break;
-                            //end of roller control case select
                     }
 
 
                     //
                     //Roller Monitor Eye Management Section
                     //
-
-                    //MonitorCase
+                    // The switch case below monitors how many rollers to send then drops fork when completed 
+                    // or is cancelled. 
                     //1 - waiting for roller monitor signal
                     //2 - debounce signal and if true arm RollerReady
                     //3 - pause and wait until roller is right at fork(based on timing)
                     //4 - Ensure that roller is past light(could still be in eye if conveyor is stopped) then disarm RollerReady and reset
 
-
-                    //Monitor Case
                     switch (MonitorCase)
                     {
                         case 1:
@@ -275,7 +285,6 @@ namespace WashEntrance_V1
                             break;
 
                         case 2:
-                            //increment counter
                             MonitorCounter = MonitorCounter + 1;
 
                             //ensure roller is a true signal debounce ~50ms
@@ -284,12 +293,12 @@ namespace WashEntrance_V1
                                 //Ensure it is a positive trigger for a roller
                                 if (SLInput4Status)
                                 {
-                                    //change case and reset counter
                                     MonitorCase = 3;
                                     MonitorCounter = 0;
 
                                     //Arm Roller Ready Boolean
                                     RollerReady = true;
+                                    Logger.WriteLog("Roller Ready");
                                 }
                                 else
                                 {
@@ -319,6 +328,7 @@ namespace WashEntrance_V1
 
                                 //Disarm Roller Ready Boolean
                                 RollerReady = false;
+                                Logger.WriteLog("Roller Not Ready");
                             }
                             break;
 
