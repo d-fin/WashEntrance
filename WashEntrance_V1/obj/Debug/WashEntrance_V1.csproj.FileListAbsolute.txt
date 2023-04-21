@@ -14,3 +14,18 @@ C:\Users\David\Documents\Projects\WashEntrance_V1\WashEntrance_V1\obj\Debug\Wash
 C:\Users\David\Documents\Projects\WashEntrance_V1\WashEntrance_V1\obj\Debug\WashEntrance_V1.pdb
 C:\Users\David\Documents\Projects\WashEntrance_V1\WashEntrance_V1\bin\Debug\SeaMAX.dll
 C:\Users\David\Documents\Projects\WashEntrance_V1\WashEntrance_V1\bin\Debug\ftd2xx.dll
+C:\Users\David$$\Desktop\Projects\WashEntrance_V1\WashEntrance_V1\bin\Debug\ftd2xx.dll
+C:\Users\David$$\Desktop\Projects\WashEntrance_V1\WashEntrance_V1\bin\Debug\SeaMAX.dll
+C:\Users\David$$\Desktop\Projects\WashEntrance_V1\WashEntrance_V1\bin\Debug\WashEntrance_V1.exe.config
+C:\Users\David$$\Desktop\Projects\WashEntrance_V1\WashEntrance_V1\bin\Debug\WashEntrance_V1.exe
+C:\Users\David$$\Desktop\Projects\WashEntrance_V1\WashEntrance_V1\bin\Debug\WashEntrance_V1.pdb
+C:\Users\David$$\Desktop\Projects\WashEntrance_V1\WashEntrance_V1\bin\Debug\SeaMAX Dot Net.dll
+C:\Users\David$$\Desktop\Projects\WashEntrance_V1\WashEntrance_V1\bin\Debug\SeaMAX Dot Net.xml
+C:\Users\David$$\Desktop\Projects\WashEntrance_V1\WashEntrance_V1\obj\Debug\WashEntrance_V1.csproj.AssemblyReference.cache
+C:\Users\David$$\Desktop\Projects\WashEntrance_V1\WashEntrance_V1\obj\Debug\WashEntrance_V1.Form1.resources
+C:\Users\David$$\Desktop\Projects\WashEntrance_V1\WashEntrance_V1\obj\Debug\WashEntrance_V1.Properties.Resources.resources
+C:\Users\David$$\Desktop\Projects\WashEntrance_V1\WashEntrance_V1\obj\Debug\WashEntrance_V1.csproj.GenerateResource.cache
+C:\Users\David$$\Desktop\Projects\WashEntrance_V1\WashEntrance_V1\obj\Debug\WashEntrance_V1.csproj.CoreCompileInputs.cache
+C:\Users\David$$\Desktop\Projects\WashEntrance_V1\WashEntrance_V1\obj\Debug\WashEntrance_V1.csproj.CopyComplete
+C:\Users\David$$\Desktop\Projects\WashEntrance_V1\WashEntrance_V1\obj\Debug\WashEntrance_V1.exe
+C:\Users\David$$\Desktop\Projects\WashEntrance_V1\WashEntrance_V1\obj\Debug\WashEntrance_V1.pdb

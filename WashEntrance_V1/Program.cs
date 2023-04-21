@@ -17,7 +17,7 @@ namespace WashEntrance_V1
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-
+            Logger.WriteLog("Starting Application");
             Thread SeaLevelBackground = new Thread(SeaLevelThread.SeaLevelTask);
             SeaLevelBackground.IsBackground = true;
             SeaLevelBackground.Start();
