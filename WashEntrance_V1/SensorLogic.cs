@@ -38,8 +38,52 @@ namespace WashEntrance_V1
             return (b & (1 << bitNumber)) != 0;
         }
 
+        public static bool SeaDACLiteConnect(SeaMAX SeaMAX_DeviceHandler)
+        {
+            // connect to SeaDAC Lite 
+            try
+            {
+                do
+                {
+                    int errno = SeaMAX_DeviceHandler.SM_Open("SeaDAC Lite 0");
+                    if (errno == 0)
+                    {
+                        Logger.WriteLog("Successfully Connected to SeaDAC Lite 0");
+                        break;
+                    }
+
+                    if (errno < 0)
+                    {
+                        switch (errno)
+                        {
+                            case -20:
+                                Logger.WriteLog($"SeaDAC Lite Error # : {errno} - Ethernet - Could not resolve Host address. (IP Address incorrect)");
+                                break;
+                            case -21:
+                                Logger.WriteLog($"SeaDAC Lite Error # : {errno} - Ethernet - Host refused or unavailable. SeaLevel Device Restart Required.");
+                                break;
+                            case -22:
+                                Logger.WriteLog($"SeaDAC Lite Error # : {errno} - Ethernet - Could not acquire free socket.");
+                                break;
+                            default:
+                                Logger.WriteLog($"SeaDAC Lite Error # : {errno}");
+                                break;
+                        }
+                    }
+                    Thread.Sleep(5000);
+                } while (true);
+            }
+            catch(Exception e)
+            {
+                Logger.WriteLog($"SeaDAC Lite connection failed. Exception: {e}");
+                return false;
+            }
+
+            return true;
+        }
+
         //Start SeaLevel Device
-        public static bool SLDeviceStart(SeaMAX SeaMAX_DeviceHandler)
+        public static bool SeaConnect370Connect(SeaMAX SeaMAX_DeviceHandler)
         {
             try
             {
@@ -50,7 +94,7 @@ namespace WashEntrance_V1
                     //exit loop if device loads successfully
                     if (errno == 0)
                     {
-                        Logger.WriteLog("Successfully Connected to SeaLevel Device");
+                        Logger.WriteLog("Successfully Connected to SeaConnect 370");
                         break;
                     }
 
@@ -59,16 +103,16 @@ namespace WashEntrance_V1
                         switch (errno)
                         {
                             case -20:
-                                Logger.WriteLog($"Error # : {errno} - Ethernet - Could not resolve Host address. (IP Address incorrect)");
+                                Logger.WriteLog($"SeaConnect 370 Error # : {errno} - Ethernet - Could not resolve Host address. (IP Address incorrect)");
                                 break;
                             case -21:
-                                Logger.WriteLog($"Error # : {errno} - Ethernet - Host refused or unavailable. SeaLevel Device Restart Required.");
+                                Logger.WriteLog($"SeaConnect 370 Error # : {errno} - Ethernet - Host refused or unavailable. SeaLevel Device Restart Required.");
                                 break;
                             case -22:
-                                Logger.WriteLog($"Error # : {errno} - Ethernet - Could not acquire free socket.");
+                                Logger.WriteLog($"SeaConnect 370 Error # : {errno} - Ethernet - Could not acquire free socket.");
                                 break;
                             default:
-                                Logger.WriteLog($"Error # : {errno}");
+                                Logger.WriteLog($"SeaConnect 370 Error # : {errno}");
                                 break;
                         }
                     }
@@ -77,7 +121,7 @@ namespace WashEntrance_V1
             }
             catch(Exception e)
             {
-                Logger.WriteLog($"SeaLevel Device connection failed. Exception: {e}");
+                Logger.WriteLog($"SeaConnect 370 connection failed. Exception: {e}");
                 return false;  
             }
 
@@ -93,10 +137,16 @@ namespace WashEntrance_V1
             /// Open Sealevel Interface
             /// 
 
-            //create the instance of the SeaMAX API   
-            SeaMAX SeaMAX_DeviceHandler = new SeaMAX();
+            //create the instance of the SeaMAX API for SeaConnect 370  
+            SeaMAX SeaConnect370_DeviceHandler = new SeaMAX();
             byte[] SeaMAXData = new byte[1];
             byte[] SeaMaxOut = new byte[1];
+
+            //create the instance of the SeaMAX API for SeaDAC Lite 
+            SeaMAX SeaDACLite_DeviceHandler = new SeaMAX();
+            byte[] SeaDACData = new byte[1];
+            byte[] SeaDACOut = new byte[1];
+
             int errnum;
 
             //start of the main error handler section
@@ -108,44 +158,45 @@ namespace WashEntrance_V1
 
                 while(true)
                 {
-                    int i = 0; 
-                    bool connected = SLDeviceStart(SeaMAX_DeviceHandler);
-                    if (connected == true) 
-                    { 
-                        break; 
-                    }
-                    else
-                    {
-                        i++; 
-                        if (i == 100)
-                        {
-                            Logger.WriteLog($"{i} attempts have been made to connect to the SeaLevel Device, Manually restart device");
-                        }
-                    }
+                    // make sure SeaDAC Lite is connected if not, keep trying to connect
+                    bool SeaDAC = SeaDACLiteConnect(SeaDACLite_DeviceHandler);
+                    bool SeaConnect = SeaConnect370Connect(SeaConnect370_DeviceHandler);
+                    if (SeaDAC && SeaConnect) { break; }
                 }
                 
                 //set all outputs to off at initial load
                 SeaMaxOut[0] = 0;
-                errnum = SeaMAX_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaMaxOut);
+                errnum = SeaConnect370_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaMaxOut);
 
                 //Sealevel Device Active monitoring Loop
                 do
                 {
+                    // check if SeaDAC Lite has input, the function will constantly monitor for input. 
+                    // on input change function has a delay parameter (use to ignore input x amount of time)
+                    if (SeaDACLite_DeviceHandler.SM_NotifyOnInputChange(0, 4, SeaDACData, 0, 0) == 0)
+                    {
+                        Logger.WriteLog("SeaDAC Input changed");
+                        errnum = SeaDACLite_DeviceHandler.SM_ReadDigitalInputs(0, 4, SeaDACData);
+                        bool SeaDacInput1Status = GetBit(SeaDACData[0], 0);
+                    }
+                    
+                   
                     // close device and exit 
                     if (Form1.Shutdown)
                     {
                         //set all outputs to off at initial load
                         SeaMaxOut[0] = 0;
-                        errnum = SeaMAX_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaMaxOut);
+                        errnum = SeaConnect370_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaMaxOut);
 
-                        int errno = SeaMAX_DeviceHandler.SM_Close();
-                        Logger.WriteLog($"Killing thread - {Thread.CurrentThread}");
+                        int errno = SeaConnect370_DeviceHandler.SM_Close();
+                        int err = SeaDACLite_DeviceHandler.SM_Close();
+                        Logger.WriteLog($"Killing thread - {Thread.CurrentThread}\nSeaConnect370 Error # : {errno}\nSeaDAC Lite Error # :  {err}");
                         Thread.Sleep(50);
                         Application.ExitThread();
                         break;
                     }
                     //read sealevel inputs status
-                    errnum = SeaMAX_DeviceHandler.SM_ReadDigitalInputs(0, 4, SeaMAXData);
+                    errnum = SeaConnect370_DeviceHandler.SM_ReadDigitalInputs(0, 4, SeaMAXData);
 
                     //handle sealevel device error
                     if (errnum < 0)
@@ -221,7 +272,7 @@ namespace WashEntrance_V1
                                     SeaMaxOut[0] = 1;
 
                                     //send output control command
-                                    errnum = SeaMAX_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaMaxOut);
+                                    errnum = SeaConnect370_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaMaxOut);
                                     ForkUpBool = true;
                                     Logger.WriteLog("Fork Up");
                                     // this is where voice will go if not wired into something different 
@@ -245,7 +296,7 @@ namespace WashEntrance_V1
                                     //Fork Down
                                     //set all outputs to off at initial load
                                     SeaMaxOut[0] = 0;
-                                    errnum = SeaMAX_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaMaxOut);
+                                    errnum = SeaConnect370_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaMaxOut);
                                     ForkUpBool = false;
                                     Logger.WriteLog("Fork Down");
                                     RollerCase = 5;

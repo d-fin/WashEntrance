@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Threading;
+using Sealevel;
 
 namespace WashEntrance_V1
 {
@@ -17,7 +18,9 @@ namespace WashEntrance_V1
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+
             Logger.WriteLog("Starting Wash Entrance Controller");
+
             Thread SeaLevelBackground = new Thread(SeaLevelThread.SeaLevelTask);
             SeaLevelBackground.IsBackground = true;
             SeaLevelBackground.Start();
