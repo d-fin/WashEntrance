@@ -21,14 +21,36 @@ namespace WashEntrance_V1
 
         private void tmrUpdateForm_Tick(object sender, EventArgs e)
         {
-            if (SeaLevelThread.SLInput1Status) { radRollerCall.Checked = true; }
+            if (SeaLevelThread.SC_Input1) { radRollerCall.Checked = true; }
             else { radRollerCall.Checked = false; }
 
-            if (SeaLevelThread.SLInput4Status) { radRollerEye.Checked = true; }
+            if (SeaLevelThread.SC_Input4) { radRollerEye.Checked = true; }
             else { radRollerEye.Checked = false; }
 
             if (SeaLevelThread.ForkUpBool) { radFork.Checked = true; }
             else { radFork.Checked = false; }
+
+            if (SeaLevelThread.seaDAC) 
+            { 
+                radSeaDACLite0.Checked = true;
+                radSeaDACLite0.BackColor = Color.Green;
+            }
+            else 
+            { 
+                radSeaDACLite0.Checked = false; 
+                radSeaDACLite0.BackColor = Color.Red;
+            }
+
+            if (SeaLevelThread.seaConnect) 
+            { 
+                radSeaConnect.Checked = true; 
+                radSeaConnect.BackColor = Color.Green;
+            }
+            else
+            { 
+                radSeaConnect.Checked= false;
+                radSeaConnect.BackColor= Color.Red;
+            }
         }
 
         private void btnExit_Click(object sender, EventArgs e)
