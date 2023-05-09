@@ -30,6 +30,18 @@ namespace WashEntrance_V1
             if (SeaLevelThread.ForkUpBool) { radFork.Checked = true; }
             else { radFork.Checked = false; }
 
+            if (SeaLevelThread.audio) { radAudio.Checked = true; }
+            else { radAudio.Checked = false; }
+
+            if (SeaLevelThread.sign_go) { radGo.Checked = true; }
+            else { radGo.Checked = false; }
+
+            if (SeaLevelThread.sign_stop) { radStop.Checked = true; }
+            else { radStop.Checked = false; }
+
+            if (SeaLevelThread.sign_trigger) { radSignTrigger.Checked = true; }
+            else { radSignTrigger.Checked = false; }
+
             if (SeaLevelThread.seaDAC) 
             { 
                 radSeaDACLite0.Checked = true;

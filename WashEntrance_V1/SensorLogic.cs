@@ -13,18 +13,21 @@ namespace WashEntrance_V1
     public static class SeaLevelThread
     {
         //variable declarations 
+
+        //SeaConnect Inputs
         public static bool SC_Input1 = false;
         public static bool SC_Input2 = false;
         public static bool SC_Input3 = false;
         public static bool SC_Input4 = false;
 
+        //SeaDac Lite Inputs
         public static bool SD_input1 = false;
         public static bool SD_input2 = false;
         public static bool SD_input3 = false;
         public static bool SD_input4 = false;
 
+        //Fork monitoring variables; 
         public static int RollerCounter = 0;
-        public static int VoiceCounter = 0;
         public static int RollerCase = 1;
 
         public static int ExtraRollCase = 1;
@@ -38,7 +41,13 @@ namespace WashEntrance_V1
         public static bool CarPgm = false;
 
         public static bool seaDAC = false;
-        public static bool seaConnect = false; 
+        public static bool seaConnect = false;
+
+        // SeaDac Lite variables 
+        public static bool sign_go = false;
+        public static bool sign_stop = false;
+        public static bool audio = false;
+        public static bool sign_trigger = false; 
 
         //bit value retrieval method
         public static bool GetBit(this byte b, int bitNumber)
@@ -147,17 +156,21 @@ namespace WashEntrance_V1
 
             //create the instance of the SeaMAX API for SeaConnect 370  
             SeaMAX SeaConnect370_DeviceHandler = new SeaMAX();
-            byte[] SeaMAXData = new byte[1];
-            byte[] SeaMaxOut = new byte[1];
+            byte[] SeaConnect_Input = new byte[1];
+            byte[] SeaConnect_Output = new byte[1];
 
             //create the instance of the SeaMAX API for SeaDAC Lite 
             SeaMAX SeaDACLite_DeviceHandler = new SeaMAX();
+            byte[] SeaDac_input = new byte[1];
+            byte[] SeaDac_Output = new byte[1];
             
-            int errnum;
+            // change these variable names to sc_errnum and sd_errnum to specify which device is throwing errors. 
+            int sc_errnum;
+            int sd_errnum;
 
            
             //start of the main error handler section
-            // The below try catch is just starting and connecting to the SeaLevel device
+            // The below try catch is starting and connecting to the SeaLevel device and monitoring the inputs. 
             try
             {
             //reference point for return on device disconnection
@@ -172,8 +185,8 @@ namespace WashEntrance_V1
                 }
                 
                 //set all outputs to off at initial load
-                SeaMaxOut[0] = 0;
-                errnum = SeaConnect370_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaMaxOut);
+                SeaConnect_Output[0] = 0;
+                sc_errnum = SeaConnect370_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaConnect_Output);
 
                 //Sealevel Device Active monitoring Loop
                 do
@@ -182,8 +195,8 @@ namespace WashEntrance_V1
                     if (Form1.Shutdown)
                     {
                         //set all outputs to off at initial load
-                        SeaMaxOut[0] = 0;
-                        errnum = SeaConnect370_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaMaxOut);
+                        SeaConnect_Output[0] = 0;
+                        sc_errnum = SeaConnect370_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaConnect_Output);
 
                         int errno = SeaConnect370_DeviceHandler.SM_Close();
                         int err = SeaDACLite_DeviceHandler.SM_Close();
@@ -192,13 +205,10 @@ namespace WashEntrance_V1
                         Application.ExitThread();
                         break;
                     }
-
-                    //read SeaDAC Lite 0's inputs on 1 and 2 
-                    // 1 = sonar, 2 = tire eye
-
-                    while (true)
+                 
+                    /*while (true)
                     {
-                        /*SeaMAX.ReferencePoint reference = new SeaMAX.ReferencePoint();
+                        SeaMAX.ReferencePoint reference = new SeaMAX.ReferencePoint();
                         SeaMAX.ChannelMode mode = new SeaMAX.ChannelMode();
 
                         errnum = SeaDACLite_DeviceHandler.SM_GetAnalogInputConfig(ref reference, ref mode);
@@ -206,7 +216,7 @@ namespace WashEntrance_V1
                         reference = SeaMAX.ReferencePoint.ANALOG;
                         mode = SeaMAX.ChannelMode.SINGLE_ENDED;
                         errnum = SeaDACLite_DeviceHandler.SM_SetAnalogInputConfig(reference, mode);
-                        */
+                       
                         SeaMAX.ChannelRange[] ranges = new SeaMAX.ChannelRange[16];
                         errnum = SeaDACLite_DeviceHandler.SM_GetAnalogInputRanges(ranges);
 
@@ -239,23 +249,27 @@ namespace WashEntrance_V1
                         {
                             break; 
                         }
-                    }
+                    }*/
 
-                    //read seaConnect inputs status (the input status will be 1 
-                    errnum = SeaConnect370_DeviceHandler.SM_ReadDigitalInputs(0, 4, SeaMAXData);
+                    //read seaConnect inputs status (the input status will be 1)
+                    //errnum = SeaConnect370_DeviceHandler.SM_ReadDigitalInputs(0, 4, SeaMAXData);
 
                     //handle sealevel device error
-                    if (errnum < 0)
+                    //if (errnum < 0)
+                    if (SeaConnect370_DeviceHandler.SM_ReadDigitalInputs(0, 4, SeaConnect_Input) < 0)
                     {
-                        Logger.WriteLog($"SeaLevel Device Error {errnum}");
+                        Logger.WriteLog($"SeaLevel Device Error {sc_errnum}");
                         break;
                     }
-
-                    //convert input data values to booleans
-                    SC_Input1 = GetBit(SeaMAXData[0], 0);
-                    SC_Input2 = GetBit(SeaMAXData[0], 1);
-                    SC_Input3 = GetBit(SeaMAXData[0], 2);
-                    SC_Input4 = GetBit(SeaMAXData[0], 3);
+                    else
+                    {
+                        //convert input data values to booleans
+                        SC_Input1 = GetBit(SeaConnect_Input[0], 0);
+                        SC_Input2 = GetBit(SeaConnect_Input[0], 1);
+                        SC_Input3 = GetBit(SeaConnect_Input[0], 2);
+                        SC_Input4 = GetBit(SeaConnect_Input[0], 3);
+                    }
+                    
 
 
                     /*
@@ -295,6 +309,8 @@ namespace WashEntrance_V1
 
                                     //set Car Programmed boolean to True
                                     CarPgm = true;
+
+                                    
                                 }
                                 else
                                 {
@@ -315,13 +331,17 @@ namespace WashEntrance_V1
                                 {
                                     //Fork Up
                                     //configure Output control variable to set input 1 state to ON
-                                    SeaMaxOut[0] = 1;
+                                    SeaConnect_Output[0] = 1;
 
                                     //send output control command
-                                    errnum = SeaConnect370_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaMaxOut);
+                                    sc_errnum = SeaConnect370_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaConnect_Output);
                                     ForkUpBool = true;
                                     Logger.WriteLog("Fork Up");
-                                    // this is where voice will go if not wired into something different 
+
+
+                                    /*
+                                     * Here is where sign flip will happen in SeaDac Lite and audio will fire.  
+                                     */
                                 }
                                 RollerCase = 4;
                             }
@@ -341,8 +361,8 @@ namespace WashEntrance_V1
                                 {
                                     //Fork Down
                                     //set all outputs to off at initial load
-                                    SeaMaxOut[0] = 0;
-                                    errnum = SeaConnect370_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaMaxOut);
+                                    SeaConnect_Output[0] = 0;
+                                    sc_errnum = SeaConnect370_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaConnect_Output);
                                     ForkUpBool = false;
                                     Logger.WriteLog("Fork Down");
                                     RollerCase = 5;
@@ -454,7 +474,7 @@ namespace WashEntrance_V1
             catch (Exception ex)
             {
                 Logger.WriteLog($"Exception : {ex}");
-                //MessageBox.Show("Sealevel Device Error: " + ex.Message, "Startup Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Sealevel Device Error: " + ex.Message, "Startup Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         #endregion
