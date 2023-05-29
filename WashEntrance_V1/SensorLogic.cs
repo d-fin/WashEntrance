@@ -441,6 +441,7 @@ namespace WashEntrance_V1
                             break;
                     }
 
+                    
                     //thread sleep for 10ms this is counter length approx.
                     Thread.Sleep(10);
                 } while (true);

@@ -39,21 +39,14 @@
             this.radSeaDACLite0 = new System.Windows.Forms.RadioButton();
             this.radSeaConnect = new System.Windows.Forms.RadioButton();
             this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.radGo = new System.Windows.Forms.RadioButton();
-            this.radStop = new System.Windows.Forms.RadioButton();
-            this.radAudio = new System.Windows.Forms.RadioButton();
-            this.radSignTrigger = new System.Windows.Forms.RadioButton();
+            this.deleteLogs = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // radRollerCall
             // 
             this.radRollerCall.AutoCheck = false;
             this.radRollerCall.AutoSize = true;
-            this.radRollerCall.Location = new System.Drawing.Point(274, 411);
+            this.radRollerCall.Location = new System.Drawing.Point(274, 148);
             this.radRollerCall.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.radRollerCall.Name = "radRollerCall";
             this.radRollerCall.Size = new System.Drawing.Size(105, 24);
@@ -66,7 +59,7 @@
             // 
             this.radRollerEye.AutoCheck = false;
             this.radRollerEye.AutoSize = true;
-            this.radRollerEye.Location = new System.Drawing.Point(273, 379);
+            this.radRollerEye.Location = new System.Drawing.Point(274, 104);
             this.radRollerEye.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.radRollerEye.Name = "radRollerEye";
             this.radRollerEye.Size = new System.Drawing.Size(106, 24);
@@ -79,7 +72,7 @@
             // 
             this.radFork.AutoCheck = false;
             this.radFork.AutoSize = true;
-            this.radFork.Location = new System.Drawing.Point(637, 379);
+            this.radFork.Location = new System.Drawing.Point(647, 95);
             this.radFork.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.radFork.Name = "radFork";
             this.radFork.Size = new System.Drawing.Size(91, 24);
@@ -118,13 +111,14 @@
             // 
             // btnExit
             // 
+            this.btnExit.BackColor = System.Drawing.Color.Red;
             this.btnExit.Location = new System.Drawing.Point(958, 590);
             this.btnExit.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnExit.Name = "btnExit";
             this.btnExit.Size = new System.Drawing.Size(152, 86);
             this.btnExit.TabIndex = 5;
             this.btnExit.Text = "Exit";
-            this.btnExit.UseVisualStyleBackColor = true;
+            this.btnExit.UseVisualStyleBackColor = false;
             this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
             // 
             // radSeaDACLite0
@@ -163,101 +157,15 @@
             this.label2.TabIndex = 8;
             this.label2.Text = "Devices";
             // 
-            // label3
+            // deleteLogs
             // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.label3.Location = new System.Drawing.Point(269, 119);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(202, 25);
-            this.label3.TabIndex = 9;
-            this.label3.Text = "SeaDAC Lite inputs";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.label4.Location = new System.Drawing.Point(269, 341);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(238, 25);
-            this.label4.TabIndex = 10;
-            this.label4.Text = "SeaConnect 370 inputs";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.label5.Location = new System.Drawing.Point(642, 119);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(215, 25);
-            this.label5.TabIndex = 11;
-            this.label5.Text = "SeaDAC Lite outputs";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.label6.Location = new System.Drawing.Point(632, 341);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(251, 25);
-            this.label6.TabIndex = 12;
-            this.label6.Text = "SeaConnect 370 outputs";
-            // 
-            // radGo
-            // 
-            this.radGo.AutoCheck = false;
-            this.radGo.AutoSize = true;
-            this.radGo.Location = new System.Drawing.Point(647, 159);
-            this.radGo.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.radGo.Name = "radGo";
-            this.radGo.Size = new System.Drawing.Size(56, 24);
-            this.radGo.TabIndex = 13;
-            this.radGo.TabStop = true;
-            this.radGo.Text = "Go";
-            this.radGo.UseVisualStyleBackColor = true;
-            // 
-            // radStop
-            // 
-            this.radStop.AutoCheck = false;
-            this.radStop.AutoSize = true;
-            this.radStop.Location = new System.Drawing.Point(647, 191);
-            this.radStop.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.radStop.Name = "radStop";
-            this.radStop.Size = new System.Drawing.Size(68, 24);
-            this.radStop.TabIndex = 14;
-            this.radStop.TabStop = true;
-            this.radStop.Text = "Stop";
-            this.radStop.UseVisualStyleBackColor = true;
-            // 
-            // radAudio
-            // 
-            this.radAudio.AutoCheck = false;
-            this.radAudio.AutoSize = true;
-            this.radAudio.Location = new System.Drawing.Point(647, 223);
-            this.radAudio.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.radAudio.Name = "radAudio";
-            this.radAudio.Size = new System.Drawing.Size(75, 24);
-            this.radAudio.TabIndex = 15;
-            this.radAudio.TabStop = true;
-            this.radAudio.Text = "Audio";
-            this.radAudio.UseVisualStyleBackColor = true;
-            // 
-            // radSignTrigger
-            // 
-            this.radSignTrigger.AutoCheck = false;
-            this.radSignTrigger.AutoSize = true;
-            this.radSignTrigger.Location = new System.Drawing.Point(274, 159);
-            this.radSignTrigger.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.radSignTrigger.Name = "radSignTrigger";
-            this.radSignTrigger.Size = new System.Drawing.Size(119, 24);
-            this.radSignTrigger.TabIndex = 16;
-            this.radSignTrigger.TabStop = true;
-            this.radSignTrigger.Text = "Sign Trigger";
-            this.radSignTrigger.UseVisualStyleBackColor = true;
+            this.deleteLogs.Location = new System.Drawing.Point(27, 603);
+            this.deleteLogs.Name = "deleteLogs";
+            this.deleteLogs.Size = new System.Drawing.Size(209, 63);
+            this.deleteLogs.TabIndex = 9;
+            this.deleteLogs.Text = "Clear Log File";
+            this.deleteLogs.UseVisualStyleBackColor = true;
+            this.deleteLogs.Click += new System.EventHandler(this.deleteLogs_Click);
             // 
             // Form1
             // 
@@ -265,14 +173,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.AppWorkspace;
             this.ClientSize = new System.Drawing.Size(1124, 691);
-            this.Controls.Add(this.radSignTrigger);
-            this.Controls.Add(this.radAudio);
-            this.Controls.Add(this.radStop);
-            this.Controls.Add(this.radGo);
-            this.Controls.Add(this.label6);
-            this.Controls.Add(this.label5);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.label3);
+            this.ControlBox = false;
+            this.Controls.Add(this.deleteLogs);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.radSeaConnect);
             this.Controls.Add(this.radSeaDACLite0);
@@ -302,14 +204,7 @@
         private System.Windows.Forms.RadioButton radSeaDACLite0;
         private System.Windows.Forms.RadioButton radSeaConnect;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.RadioButton radGo;
-        private System.Windows.Forms.RadioButton radStop;
-        private System.Windows.Forms.RadioButton radAudio;
-        private System.Windows.Forms.RadioButton radSignTrigger;
+        private System.Windows.Forms.Button deleteLogs;
     }
 }
 

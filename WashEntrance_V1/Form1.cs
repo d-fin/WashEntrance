@@ -30,7 +30,7 @@ namespace WashEntrance_V1
             if (SeaLevelThread.ForkUpBool) { radFork.Checked = true; }
             else { radFork.Checked = false; }
 
-            if (SeaLevelThread.audio) { radAudio.Checked = true; }
+            /*if (SeaLevelThread.audio) { radAudio.Checked = true; }
             else { radAudio.Checked = false; }
 
             if (SeaLevelThread.sign_go) { radGo.Checked = true; }
@@ -40,7 +40,7 @@ namespace WashEntrance_V1
             else { radStop.Checked = false; }
 
             if (SeaLevelThread.sign_trigger) { radSignTrigger.Checked = true; }
-            else { radSignTrigger.Checked = false; }
+            else { radSignTrigger.Checked = false; }*/
 
             if (SeaLevelThread.seaDAC) 
             { 
@@ -70,6 +70,11 @@ namespace WashEntrance_V1
             Shutdown = true;
             Thread.Sleep(1000);
             Application.Exit();
+        }
+
+        private void deleteLogs_Click(object sender, EventArgs e)
+        {
+            Logger.DeleteOldLines();
         }
     }
 }
