@@ -21,28 +21,43 @@ namespace WashEntrance_V1
 
         private void tmrUpdateForm_Tick(object sender, EventArgs e)
         {
-            if (SeaLevelThread.SC_Input1) { radRollerCall.Checked = true; }
-            else { radRollerCall.Checked = false; }
+            if (SeaLevelThread.in_position) { radInPosition.Checked = true; }
+            else { radInPosition.Checked = false; }
 
-            if (SeaLevelThread.SC_Input4) { radRollerEye.Checked = true; }
+            if (SeaLevelThread.SD2_input1_sonar) { radSonar.Checked = true; }
+            else { radSonar.Checked = false; }
+
+            if (SeaLevelThread.SD2_input2_tireEye) { radTireEye.Checked = true; }
+            else { radTireEye.Checked = false; }
+
+            if (SeaLevelThread.SD2_input3_rollerEye) { radRollerEye.Checked = true; }
             else { radRollerEye.Checked = false; }
 
-            if (SeaLevelThread.ForkUpBool) { radFork.Checked = true; }
-            else { radFork.Checked = false; }
+            if (SeaLevelThread.SD2_input4_resetSigns) { radResetSigns.Checked = true; }
+            else { radResetSigns.Checked = false; }
 
-            /*if (SeaLevelThread.audio) { radAudio.Checked = true; }
+            if (SeaLevelThread.SD1_input1_pgmCar) { radPgmCar.Checked = true; }
+            else { radPgmCar.Checked = false; }
+
+            if (SeaLevelThread.SD2_output1_audio) { radAudio.Checked = true; }
             else { radAudio.Checked = false; }
+            
+            if (SeaLevelThread.SD2_output2_signs) {
+                radStop.Checked = true;
+                radGoSign.Checked = false;
+            }
+            else 
+            { 
+                radStop.Checked = false;
+                radGoSign.Checked = true; 
+            }
+            
+            if (SeaLevelThread.SD2_output3_forkSolenoid) { radFork.Checked = true; }
+            else { radFork.Checked = false; }
+            
+            
 
-            if (SeaLevelThread.sign_go) { radGo.Checked = true; }
-            else { radGo.Checked = false; }
-
-            if (SeaLevelThread.sign_stop) { radStop.Checked = true; }
-            else { radStop.Checked = false; }
-
-            if (SeaLevelThread.sign_trigger) { radSignTrigger.Checked = true; }
-            else { radSignTrigger.Checked = false; }*/
-
-            if (SeaLevelThread.seaDAC) 
+            if (SeaLevelThread.seaDAC1) 
             { 
                 radSeaDACLite0.Checked = true;
                 radSeaDACLite0.BackColor = Color.Green;
@@ -53,7 +68,7 @@ namespace WashEntrance_V1
                 radSeaDACLite0.BackColor = Color.Red;
             }
 
-            if (SeaLevelThread.seaConnect) 
+            if (SeaLevelThread.seaDAC2) 
             { 
                 radSeaConnect.Checked = true; 
                 radSeaConnect.BackColor = Color.Green;

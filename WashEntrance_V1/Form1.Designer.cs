@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.radRollerCall = new System.Windows.Forms.RadioButton();
+            this.radTireEye = new System.Windows.Forms.RadioButton();
             this.radRollerEye = new System.Windows.Forms.RadioButton();
             this.radFork = new System.Windows.Forms.RadioButton();
             this.label1 = new System.Windows.Forms.Label();
@@ -40,26 +40,34 @@
             this.radSeaConnect = new System.Windows.Forms.RadioButton();
             this.label2 = new System.Windows.Forms.Label();
             this.deleteLogs = new System.Windows.Forms.Button();
+            this.radPgmCar = new System.Windows.Forms.RadioButton();
+            this.radSonar = new System.Windows.Forms.RadioButton();
+            this.radResetSigns = new System.Windows.Forms.RadioButton();
+            this.radAudio = new System.Windows.Forms.RadioButton();
+            this.radStop = new System.Windows.Forms.RadioButton();
+            this.radGoSign = new System.Windows.Forms.RadioButton();
+            this.label3 = new System.Windows.Forms.Label();
+            this.radInPosition = new System.Windows.Forms.RadioButton();
             this.SuspendLayout();
             // 
-            // radRollerCall
+            // radTireEye
             // 
-            this.radRollerCall.AutoCheck = false;
-            this.radRollerCall.AutoSize = true;
-            this.radRollerCall.Location = new System.Drawing.Point(274, 148);
-            this.radRollerCall.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.radRollerCall.Name = "radRollerCall";
-            this.radRollerCall.Size = new System.Drawing.Size(105, 24);
-            this.radRollerCall.TabIndex = 0;
-            this.radRollerCall.TabStop = true;
-            this.radRollerCall.Text = "Roller Call";
-            this.radRollerCall.UseVisualStyleBackColor = true;
+            this.radTireEye.AutoCheck = false;
+            this.radTireEye.AutoSize = true;
+            this.radTireEye.Location = new System.Drawing.Point(275, 136);
+            this.radTireEye.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.radTireEye.Name = "radTireEye";
+            this.radTireEye.Size = new System.Drawing.Size(91, 24);
+            this.radTireEye.TabIndex = 0;
+            this.radTireEye.TabStop = true;
+            this.radTireEye.Text = "Tire Eye";
+            this.radTireEye.UseVisualStyleBackColor = true;
             // 
             // radRollerEye
             // 
             this.radRollerEye.AutoCheck = false;
             this.radRollerEye.AutoSize = true;
-            this.radRollerEye.Location = new System.Drawing.Point(274, 104);
+            this.radRollerEye.Location = new System.Drawing.Point(275, 104);
             this.radRollerEye.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.radRollerEye.Name = "radRollerEye";
             this.radRollerEye.Size = new System.Drawing.Size(106, 24);
@@ -141,9 +149,9 @@
             this.radSeaConnect.Location = new System.Drawing.Point(14, 129);
             this.radSeaConnect.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.radSeaConnect.Name = "radSeaConnect";
-            this.radSeaConnect.Size = new System.Drawing.Size(154, 24);
+            this.radSeaConnect.Size = new System.Drawing.Size(140, 24);
             this.radSeaConnect.TabIndex = 7;
-            this.radSeaConnect.Text = "SeaConnect 370";
+            this.radSeaConnect.Text = "SeaDAC Lite 1";
             this.radSeaConnect.UseVisualStyleBackColor = true;
             // 
             // label2
@@ -167,6 +175,108 @@
             this.deleteLogs.UseVisualStyleBackColor = true;
             this.deleteLogs.Click += new System.EventHandler(this.deleteLogs_Click);
             // 
+            // radPgmCar
+            // 
+            this.radPgmCar.AutoCheck = false;
+            this.radPgmCar.AutoSize = true;
+            this.radPgmCar.Location = new System.Drawing.Point(275, 200);
+            this.radPgmCar.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.radPgmCar.Name = "radPgmCar";
+            this.radPgmCar.Size = new System.Drawing.Size(123, 24);
+            this.radPgmCar.TabIndex = 10;
+            this.radPgmCar.TabStop = true;
+            this.radPgmCar.Text = "Program Car";
+            this.radPgmCar.UseVisualStyleBackColor = true;
+            // 
+            // radSonar
+            // 
+            this.radSonar.AutoCheck = false;
+            this.radSonar.AutoSize = true;
+            this.radSonar.Location = new System.Drawing.Point(274, 168);
+            this.radSonar.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.radSonar.Name = "radSonar";
+            this.radSonar.Size = new System.Drawing.Size(77, 24);
+            this.radSonar.TabIndex = 11;
+            this.radSonar.TabStop = true;
+            this.radSonar.Text = "Sonar";
+            this.radSonar.UseVisualStyleBackColor = true;
+            // 
+            // radResetSigns
+            // 
+            this.radResetSigns.AutoCheck = false;
+            this.radResetSigns.AutoSize = true;
+            this.radResetSigns.Location = new System.Drawing.Point(275, 232);
+            this.radResetSigns.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.radResetSigns.Name = "radResetSigns";
+            this.radResetSigns.Size = new System.Drawing.Size(113, 24);
+            this.radResetSigns.TabIndex = 12;
+            this.radResetSigns.TabStop = true;
+            this.radResetSigns.Text = "Sign Reset";
+            this.radResetSigns.UseVisualStyleBackColor = true;
+            // 
+            // radAudio
+            // 
+            this.radAudio.AutoCheck = false;
+            this.radAudio.AutoSize = true;
+            this.radAudio.Location = new System.Drawing.Point(647, 191);
+            this.radAudio.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.radAudio.Name = "radAudio";
+            this.radAudio.Size = new System.Drawing.Size(75, 24);
+            this.radAudio.TabIndex = 13;
+            this.radAudio.TabStop = true;
+            this.radAudio.Text = "Audio";
+            this.radAudio.UseVisualStyleBackColor = true;
+            // 
+            // radStop
+            // 
+            this.radStop.AutoCheck = false;
+            this.radStop.AutoSize = true;
+            this.radStop.Location = new System.Drawing.Point(647, 159);
+            this.radStop.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.radStop.Name = "radStop";
+            this.radStop.Size = new System.Drawing.Size(168, 24);
+            this.radStop.TabIndex = 14;
+            this.radStop.TabStop = true;
+            this.radStop.Text = "Stop Car in Neutral";
+            this.radStop.UseVisualStyleBackColor = true;
+            // 
+            // radGoSign
+            // 
+            this.radGoSign.AutoCheck = false;
+            this.radGoSign.AutoSize = true;
+            this.radGoSign.Location = new System.Drawing.Point(647, 127);
+            this.radGoSign.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.radGoSign.Name = "radGoSign";
+            this.radGoSign.Size = new System.Drawing.Size(173, 24);
+            this.radGoSign.TabIndex = 15;
+            this.radGoSign.TabStop = true;
+            this.radGoSign.Text = "Please Pull Forward";
+            this.radGoSign.UseVisualStyleBackColor = true;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.ForeColor = System.Drawing.SystemColors.HighlightText;
+            this.label3.Location = new System.Drawing.Point(268, 341);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(79, 32);
+            this.label3.TabIndex = 16;
+            this.label3.Text = "Data";
+            // 
+            // radInPosition
+            // 
+            this.radInPosition.AutoCheck = false;
+            this.radInPosition.AutoSize = true;
+            this.radInPosition.Location = new System.Drawing.Point(275, 392);
+            this.radInPosition.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.radInPosition.Name = "radInPosition";
+            this.radInPosition.Size = new System.Drawing.Size(135, 24);
+            this.radInPosition.TabIndex = 17;
+            this.radInPosition.TabStop = true;
+            this.radInPosition.Text = "Car in Position";
+            this.radInPosition.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -174,6 +284,14 @@
             this.BackColor = System.Drawing.SystemColors.AppWorkspace;
             this.ClientSize = new System.Drawing.Size(1124, 691);
             this.ControlBox = false;
+            this.Controls.Add(this.radInPosition);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.radGoSign);
+            this.Controls.Add(this.radStop);
+            this.Controls.Add(this.radAudio);
+            this.Controls.Add(this.radResetSigns);
+            this.Controls.Add(this.radSonar);
+            this.Controls.Add(this.radPgmCar);
             this.Controls.Add(this.deleteLogs);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.radSeaConnect);
@@ -183,7 +301,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.radFork);
             this.Controls.Add(this.radRollerEye);
-            this.Controls.Add(this.radRollerCall);
+            this.Controls.Add(this.radTireEye);
             this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.Name = "Form1";
             this.Text = "Form1";
@@ -194,7 +312,7 @@
 
         #endregion
 
-        private System.Windows.Forms.RadioButton radRollerCall;
+        private System.Windows.Forms.RadioButton radTireEye;
         private System.Windows.Forms.RadioButton radRollerEye;
         private System.Windows.Forms.RadioButton radFork;
         private System.Windows.Forms.Label label1;
@@ -205,6 +323,14 @@
         private System.Windows.Forms.RadioButton radSeaConnect;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button deleteLogs;
+        private System.Windows.Forms.RadioButton radPgmCar;
+        private System.Windows.Forms.RadioButton radSonar;
+        private System.Windows.Forms.RadioButton radResetSigns;
+        private System.Windows.Forms.RadioButton radAudio;
+        private System.Windows.Forms.RadioButton radStop;
+        private System.Windows.Forms.RadioButton radGoSign;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.RadioButton radInPosition;
     }
 }
 

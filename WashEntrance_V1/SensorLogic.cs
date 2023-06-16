@@ -14,40 +14,38 @@ namespace WashEntrance_V1
     {
         //variable declarations 
 
-        //SeaConnect Inputs
-        public static bool SC_Input1 = false;
-        public static bool SC_Input2 = false;
-        public static bool SC_Input3 = false;
-        public static bool SC_Input4 = false;
+        public static bool seaDAC1 = false;
+        public static bool seaDAC2 = false;
 
-        //SeaDac Lite Inputs
-        public static bool SD_input1 = false;
-        public static bool SD_input2 = false;
-        public static bool SD_input3 = false;
-        public static bool SD_input4 = false;
+        // all inputs are 10 - 24 VDC 
+        public static bool SD2_input1_sonar = false;  // sonar
+        public static bool SD2_input2_tireEye = false;  // tire eye 
+        public static bool SD2_input3_rollerEye = false;  // roller eye 
+        public static bool SD2_input4_resetSigns = false;  // reset signs
 
-        //Fork monitoring variables; 
-        public static int RollerCounter = 0;
-        public static int RollerCase = 1;
+        public static bool SD1_input1_pgmCar = false;  // program car
+        public static bool SD1_input2 = false;  
+        public static bool SD1_input3 = false;
+        public static bool SD1_input4 = false;
 
-        public static int ExtraRollCase = 1;
-        public static int RollersLeft = 0;
-        public static int RollersUp = 0;
-        public static bool ForkUpBool = false;
-        public static int ExtraRollerCounter = 0;
-        public static bool RollerReady = false;
-        public static int MonitorCounter = 0;
-        public static int MonitorCase = 1;
-        public static bool CarPgm = false;
+        // outputs are Form C Relays, voltage output is 10-24 VDC from common. 
+        public static bool SD2_output1_audio = false; // audio
+        public static bool SD2_output2_signs = false; // stop sign & go sign (N/O = closed, N/C = go)
+        public static bool SD2_output3_forkSolenoid = false; // fork solenoid
+        public static bool SD2_output4 = false;
+        
+        public static bool SD1_output1 = false;
+        public static bool SD1_output2 = false;
+        public static bool SD1_output3 = false;
+        public static bool SD1_output4 = false;
 
-        public static bool seaDAC = false;
-        public static bool seaConnect = false;
+        // Non-device related variables
 
-        // SeaDac Lite variables 
-        public static bool sign_go = false;
-        public static bool sign_stop = false;
-        public static bool audio = false;
-        public static bool sign_trigger = false; 
+        public static bool carProgrammed = false;
+        public static bool in_position = false; 
+       
+
+        
 
         //bit value retrieval method
         public static bool GetBit(this byte b, int bitNumber)
@@ -90,7 +88,7 @@ namespace WashEntrance_V1
                     Thread.Sleep(5000);
                 } while (true);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Logger.WriteLog($"SeaDAC Lite connection failed. Exception: {e}");
                 return false;
@@ -99,366 +97,219 @@ namespace WashEntrance_V1
             return true;
         }
 
-        //Start SeaLevel Device
-        public static bool SeaConnect370Connect(SeaMAX SeaMAX_DeviceHandler)
+        private static bool CarInPosition(SeaMAX SeaDac_DeviceHandler, byte[] input)
         {
-            try
+            bool sonar = false;
+            bool tire_eye = false; 
+
+            while (true)
             {
-                do
+                int err = SeaDac_DeviceHandler.SM_ReadDigitalInputs(0, 2, input);
+                if (err < 0)
                 {
-                    int errno = SeaMAX_DeviceHandler.SM_Open("192.168.1.176");
+                    Logger.WriteLog("Error reading sonar and tire eye inputs");
+                    return false; 
+                }
+                else
+                {
+                    // if both of these variables are true then the car is in position 
+                    sonar = GetBit(input[0], 0);
+                    tire_eye = GetBit(input[0], 1);
 
-                    //exit loop if device loads successfully
-                    if (errno == 0)
+                    if (sonar == true && tire_eye == true)
                     {
-                        Logger.WriteLog("Successfully Connected to SeaConnect 370");
-                        break;
+                        return true; 
                     }
+                }
+            } 
+        }
 
-                    if (errno < 0)
-                    {
-                        switch (errno)
-                        {
-                            case -20:
-                                Logger.WriteLog($"SeaConnect 370 Error # : {errno} - Ethernet - Could not resolve Host address. (IP Address incorrect)");
-                                break;
-                            case -21:
-                                Logger.WriteLog($"SeaConnect 370 Error # : {errno} - Ethernet - Host refused or unavailable. SeaLevel Device Restart Required.");
-                                break;
-                            case -22:
-                                Logger.WriteLog($"SeaConnect 370 Error # : {errno} - Ethernet - Could not acquire free socket.");
-                                break;
-                            default:
-                                Logger.WriteLog($"SeaConnect 370 Error # : {errno}");
-                                break;
-                        }
-                    }
-                    Thread.Sleep(5000);
-                } while (true);
-            }
-            catch(Exception e)
+        private static bool RollerMonitoring(SeaMAX SeaDac_DeviceHandler, byte[] input, byte[] output)
+        {
+            int rollerCounter = 0;
+            bool rollerEye = false; 
+            int err = -1;
+            output[0] = 1;
+
+            // write to the fork solenoid relay to lift the fork.
+            while (true)
             {
-                Logger.WriteLog($"SeaConnect 370 connection failed. Exception: {e}");
-                return false;  
+                err = SeaDac_DeviceHandler.SM_WriteDigitalOutputs(2, 1, output);
+                if (err < 0)
+                {
+                    Logger.WriteLog("Error outputting to fork solenoid.");
+                }
+                else
+                {
+                    SD2_output3_forkSolenoid = true;
+                    break;
+                }
             }
 
-            return true; 
+            while (true)
+            {
+                err = SeaDac_DeviceHandler.SM_ReadDigitalInputs(2, 1, input);
+                if (err > 0)
+                {
+                    SD2_input3_rollerEye = true;
+                }
+                rollerEye = GetBit(input[0], 0);
+                if (rollerEye == true)
+                {
+                    rollerCounter++;
+                    if (rollerCounter == 5)
+                    {
+                        err = -1; 
+                        while (err < 0)
+                        {
+                            output[0] = 0;
+                            err = SeaDac_DeviceHandler.SM_WriteDigitalOutputs(2, 1, output);
+                            if (err > 0)
+                            {
+                                SD2_output3_forkSolenoid = true;
+                            }
+                        }
+                        return true;
+                    }
+                }
+            }
         }
 
         // Main SeaLevel Task
         public static void SeaLevelTask()
         {
-            #region Sealevel Device
+            SeaMAX SeaDACLite1_DeviceHandler = new SeaMAX();
+            SeaMAX SeaDACLite2_DeviceHandler = new SeaMAX();
+            byte[] SeaDac1_Input = new byte[1];
+            byte[] SeaDac2_Input = new byte[1];
+            byte[] SeaDac1_Output = new byte[1];
+            byte[] SeaDac2_Output = new byte[1];
+            int err;
 
-            ///
-            /// Open Sealevel Interface
-            /// 
+            while (true)
+            {
+                seaDAC1 = SeaDACLiteConnect(SeaDACLite1_DeviceHandler);
+                seaDAC2 = SeaDACLiteConnect(SeaDACLite2_DeviceHandler);
+                if (seaDAC1 && seaDAC2) { break; }
+            }
 
-            //create the instance of the SeaMAX API for SeaConnect 370  
-            //SeaMAX SeaConnect370_DeviceHandler = new SeaMAX();
-            //byte[] SeaConnect_Input = new byte[1];
-            //byte[] SeaConnect_Output = new byte[1];
-
-            //create the instance of the SeaMAX API for SeaDAC Lite 
-            SeaMAX SeaDACLite_DeviceHandler = new SeaMAX();
-            byte[] SeaDac_Input = new byte[1];
-            byte[] SeaDac_Output = new byte[1];
-            
-            // change these variable names to sc_errnum and sd_errnum to specify which device is throwing errors. 
-            //int sc_errnum;
-            int sd_errnum;
-
-           
-            //start of the main error handler section
-            // The below try catch is starting and connecting to the SeaLevel device and monitoring the inputs. 
             try
             {
-            //reference point for return on device disconnection
-            RestartConnection:
-
-                while(true)
+                while (true)
                 {
-                    // make sure SeaDAC Lite is connected if not, keep trying to connect
-                    seaDAC = SeaDACLiteConnect(SeaDACLite_DeviceHandler);
-                    //seaConnect = SeaConnect370Connect(SeaConnect370_DeviceHandler);
-                    if (seaDAC) { break; }
-                }
-                
-                //set all outputs to off at initial load
-                //SeaConnect_Output[0] = 0;
-                //sc_errnum = SeaConnect370_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaConnect_Output);
-
-                //Sealevel Device Active monitoring Loop
-                do
-                {
-                    // close device and exit 
                     if (Form1.Shutdown)
                     {
-                        //set all outputs to off at initial load
-                        //SeaConnect_Output[0] = 0;
-                        //sc_errnum = SeaConnect370_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaConnect_Output);
-
-                        SeaDac_Output[0] = 0;
-                        sd_errnum = SeaDACLite_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaDac_Output);
-
-                        //int errno = SeaConnect370_DeviceHandler.SM_Close();
-                        sd_errnum = SeaDACLite_DeviceHandler.SM_Close();
-                        Logger.WriteLog($"Killing thread - {Thread.CurrentThread}\nSeaDAC Lite Error # :  {sd_errnum}");
+                        SeaDac1_Output[0] = 0;
+                        SeaDac2_Output[0] = 0;
+                        err = SeaDACLite1_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaDac1_Output);
+                        err = SeaDACLite2_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaDac2_Output);
                         Thread.Sleep(50);
                         Application.ExitThread();
                         break;
                     }
 
-                    //read seaConnect inputs status (the input status will be 1)
-                    //errnum = SeaConnect370_DeviceHandler.SM_ReadDigitalInputs(0, 4, SeaMAXData);
 
-                    //handle sealevel device error
-                    //if (errnum < 0)
-                    
-                    /*if (SeaConnect370_DeviceHandler.SM_ReadDigitalInputs(0, 4, SeaConnect_Input) < 0)
+                    while (true)
                     {
-                        Logger.WriteLog($"SeaLevel Device Error {sc_errnum}");
-                        break;
+                        err = SeaDACLite1_DeviceHandler.SM_ReadDigitalInputs(0, 1, SeaDac1_Input);
+
+                        if (err < 0)
+                        {
+                            Logger.WriteLog("Error reading input 1 of device 2.");
+                        }
+                        else
+                        {
+                            SD1_input1_pgmCar = GetBit(SeaDac1_Input[0], 0);
+                            if (SD1_input1_pgmCar == true)
+                            {
+                                // this means a car is ready to be programmed, now we need to make sure the car is in position. 
+                                carProgrammed = true;
+                                int attempts = 0;
+                                while (in_position == false)
+                                {
+                                    in_position = CarInPosition(SeaDACLite2_DeviceHandler, SeaDac2_Input);
+                                    attempts++; 
+                                    if (attempts > 100)
+                                    {
+                                        // there is an error reading the inputs which means there is a sensor issue or a device issue. 
+                                    }
+                                    if (in_position == true)
+                                    {
+                                        // below is firing the signs and audio relays 
+                                        // the result is : Please Pull Forward sign (N/C) is turned off. 
+                                        //                 Stop sign (N/O) is turned on 
+                                        //                 Audio is played - audio is a dry contact off of the N/O device relay. 
+                                        SeaDac2_Output[0] = 1;
+                                        err = SeaDACLite2_DeviceHandler.SM_WriteDigitalOutputs(0, 1, SeaDac2_Output);
+                                        if (err >= 0)
+                                        {
+                                            SD2_output1_audio = true;
+                                            Thread.Sleep(3000);
+                                            SeaDac2_Output[0] = 0;
+                                            err = SeaDACLite2_DeviceHandler.SM_WriteDigitalOutputs(0, 1, SeaDac2_Output);
+                                            SD2_output1_audio = false; 
+                                        }
+
+                                        SeaDac2_Output[0] = 1;
+                                        err = SeaDACLite2_DeviceHandler.SM_WriteDigitalOutputs(1, 1, SeaDac2_Output);
+                                        if (err >= 0)
+                                        {
+                                            SD2_output2_signs = true; 
+                                        }
+
+                                        // the fork solenoid also needs to be fired but function is defined for that since we are implementing roller monitoring. (done in function)
+                                        bool carMoving = RollerMonitoring(SeaDACLite2_DeviceHandler, SeaDac2_Input, SeaDac2_Output);
+                                        if (carMoving == true)
+                                        {
+                                            Logger.WriteLog("Rollers outputted and car is moving.");
+                                        }
+                                        else
+                                        {
+                                            Logger.WriteLog("Error outputting rollers.");
+                                        }
+                                    }
+                                }
+
+                                // wait for reset sign to be true. 
+                                // We want to ignore all inputs when the a car is programmed (we dont want to program another car too early). 
+                                // 
+
+                                if (carProgrammed == true)
+                                {
+                                    while (true)
+                                    {
+                                        err = SeaDACLite2_DeviceHandler.SM_ReadDigitalInputs(3, 1, SeaDac2_Input);
+                                        SD2_input4_resetSigns = GetBit(SeaDac2_Input[0], 1);
+
+                                        if (SD2_input4_resetSigns == true)
+                                        {
+                                            SeaDac2_Output[0] = 0;
+                                            err = SeaDACLite2_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaDac2_Output);
+                                            carProgrammed = false;
+                                            in_position = false;
+                                            SD2_output1_audio = GetBit(SeaDac2_Output[0], 0);
+                                            SD2_output2_signs = GetBit(SeaDac2_Output[0], 1);
+                                            SD2_output3_forkSolenoid = GetBit(SeaDac2_Output[0], 2);
+
+                                            err = SeaDACLite2_DeviceHandler.SM_ReadDigitalInputs(0, 4, SeaDac2_Input);
+                                            SD2_input1_sonar = GetBit(SeaDac2_Input[0], 0);
+                                            SD2_input2_tireEye = GetBit(SeaDac2_Input[0], 1);
+                                            SD2_input3_rollerEye = GetBit(SeaDac2_Input[0], 2);
+                                            SD2_input4_resetSigns = GetBit(SeaDac2_Input[0], 3);
+
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
-                    else
-                    {
-                        //convert input data values to booleans
-                        SC_Input1 = GetBit(SeaConnect_Input[0], 0);
-                        SC_Input2 = GetBit(SeaConnect_Input[0], 1);
-                        SC_Input3 = GetBit(SeaConnect_Input[0], 2);
-                        SC_Input4 = GetBit(SeaConnect_Input[0], 3);
-                    }*/
-
-                    // Roller Call - input 1
-                    // Roller Eye - input 4
-                    // 
-                    // Roller Disable - output 1
-                    // Audio - output 3
-                    if (SeaDACLite_DeviceHandler.SM_ReadDigitalInputs(0, 4, SeaDac_Output) < 0)
-                    {
-                        Logger.WriteLog($"SeaDac Device Error : Error Reading Digital Inputs");
-                    }
-                    else
-                    {
-                        SD_input1 = GetBit(SeaDac_Input[0], 0);
-                        SD_input2 = GetBit(SeaDac_Input[0], 1);
-                        SD_input3 = GetBit(SeaDac_Input[0], 2);
-                        SD_input4 = GetBit(SeaDac_Input[0], 3);
-                    }
-                    
-
-
-                    /*
-                    //Roller Control section
-                    //'''''
-
-                    'RollerCase
-                    '1 - waiting for roller call
-                    '2 - false trigger debounce pause
-                    '3 - wait for RollerReady
-                    '4 - wait for Roller to reach fork (RollerReady = False) then change case based on roller count
-                    '5 - Fork Down/waiting for roller call off or extra roller input
-                     * 
-                     */
-
-                    switch (RollerCase)
-                    {
-                        case 1:
-                            //Wait for Roller Call signal from TunnelWatch + 24VAC Relay energized in TunnelWatch Box feeding power to fork circuit
-                            if (SD_input1)
-                            {
-                                RollerCase = 2;
-                                RollerCounter = 0;
-                            }
-                            break;
-                        case 2:
-                            //debounce roller call input to ensure no false triggering ~100ms
-                            if (RollerCounter > 10)
-                            {
-                                //change variables based on roller call input
-                                if (SD_input1)
-                                {
-                                    //positive trigger signal, set variables and change case
-                                    RollerCase = 3;
-                                    RollersLeft = 2;
-                                    RollersUp = 0;
-
-                                    //set Car Programmed boolean to True
-                                    CarPgm = true;
-                                    SeaDac_Output[0] = 1;
-                                    sd_errnum = SeaDACLite_DeviceHandler.SM_WriteDigitalOutputs(2, 1, SeaDac_Output);
-                                    
-                                }
-                                else
-                                {
-                                    //false trigger so reset 
-                                    RollerCase = 1;
-                                }
-                            }
-                            else
-                            {
-                                RollerCounter = RollerCounter + 1;
-                            }
-                            break;
-                        case 3:
-                            if (RollerReady)
-                            {
-                                //check fork position and raise if necessary
-                                if (!ForkUpBool)
-                                {
-                                    //Fork Up
-                                    //configure Output control variable to set input 1 state to ON
-                                    //SeaConnect_Output[0] = 1;
-
-                                    //send output control command
-                                    //sc_errnum = SeaConnect370_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaConnect_Output);
-                                    SeaDac_Output[0] = 1;
-                                    sd_errnum = SeaDACLite_DeviceHandler.SM_WriteDigitalOutputs(0, 1, SeaDac_Output);
-                                    ForkUpBool = true;
-                                    Logger.WriteLog("Fork Up");
-
-
-                                    /*
-                                     * Here is where sign flip will happen in SeaDac Lite and audio will fire.  
-                                     */
-                                }
-                                RollerCase = 4;
-                            }
-                            break;
-                        case 4:
-                            if (!RollerReady)
-                            {
-                                //check if more rollers are armed
-                                if (RollersLeft > 0)
-                                {
-                                    //adjust counters
-                                    RollersUp = RollersUp + 1;
-                                    RollersLeft = RollersLeft - 1;
-                                    RollerCase = 3;
-                                }
-                                else
-                                {
-                                    //Fork Down
-                                    //set all outputs to off at initial load
-                                    //SeaConnect_Output[0] = 0;
-                                    //sc_errnum = SeaConnect370_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaConnect_Output);
-                                    SeaDac_Output[0] = 1;
-                                    sd_errnum = SeaDACLite_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaDac_Output);
-                                    ForkUpBool = false;
-                                    Logger.WriteLog("Fork Down");
-                                    RollerCase = 5;
-                                }
-                            }
-                            break;
-
-                        case 5:
-                            //Wait for TunnelWatch to signal Roller Down then return to start of cycle
-                            if (!SD_input1)
-                            {
-                                RollerCase = 1;
-                            }
-                            break;
-                    }
-
-
-                    //
-                    //Roller Monitor Eye Management Section
-                    //
-                    // The switch case below monitors how many rollers to send then drops fork when completed 
-                    // or is cancelled. 
-                    //1 - waiting for roller monitor signal
-                    //2 - debounce signal and if true arm RollerReady
-                    //3 - pause and wait until roller is right at fork(based on timing)
-                    //4 - Ensure that roller is past light(could still be in eye if conveyor is stopped) then disarm RollerReady and reset
-
-                    switch (MonitorCase)
-                    {
-                        case 1:
-                            //Wait for Roller Monitor Light Signal (Roller in position just before fork)
-                            if (SC_Input4)
-                            {
-                                MonitorCase = 2;
-                                MonitorCounter = 0;
-                            }
-                            break;
-
-                        case 2:
-                            MonitorCounter = MonitorCounter + 1;
-
-                            //ensure roller is a true signal debounce ~50ms
-                            if (MonitorCounter > 5)
-                            {
-                                //Ensure it is a positive trigger for a roller
-                                if (SD_input4)
-                                {
-                                    MonitorCase = 3;
-                                    MonitorCounter = 0;
-
-                                    //Arm Roller Ready Boolean
-                                    RollerReady = true;
-                                    Logger.WriteLog("Roller Ready");
-                                }
-                                else
-                                {
-                                    //false trigger, reset
-                                    MonitorCase = 1;
-                                }
-                            }
-                            break;
-
-                        case 3:
-                            //debounce input thru pause to ensure that the off wasn't a hole in roller (ensure that the roller is past eye before looking again) ~500ms
-                            //allow rollerready to stay armed for 500ms in case there is a roller call with a roller right in position  Roller time to bad fork position is about 1100ms
-                            MonitorCounter = MonitorCounter + 1;
-
-                            if (MonitorCounter > 50)
-                            {
-                                MonitorCase = 4;
-                            }
-                            break;
-
-                        case 4:
-                            //Ensure Roller is past Eye before resetting Case
-                            if (!SD_input4)
-                            {
-                                MonitorCase = 5;
-                                MonitorCounter = 0;
-
-                                //Disarm Roller Ready Boolean
-                                RollerReady = false;
-                                Logger.WriteLog("Roller Not Ready");
-                            }
-                            break;
-
-                        case 5:
-                            //debounce input after off as well in case of bouncing and to ensure roller travel ~500ms
-                            MonitorCounter = MonitorCounter + 1;
-
-                            if (MonitorCounter > 50)
-                            {
-                                MonitorCase = 1;
-                            }
-                            break;
-                    }
-
-                    
-                    //thread sleep for 10ms this is counter length approx.
-                    Thread.Sleep(10);
-                } while (true);
-
-                //thread sleep 5 seconds
-                Thread.Sleep(5000);
-
-                //redirect code to connection restart loop as usb is unplugged
-                goto RestartConnection;
-
+                }
             }
             catch (Exception ex)
             {
                 Logger.WriteLog($"Exception : {ex}");
-                MessageBox.Show("Sealevel Device Error: " + ex.Message, "Startup Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-        #endregion
     }
 }
