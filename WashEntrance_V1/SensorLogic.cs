@@ -99,9 +99,6 @@ namespace WashEntrance_V1
 
         private static bool CarInPosition(SeaMAX SeaDac_DeviceHandler, byte[] input)
         {
-            bool sonar = false;
-            bool tire_eye = false; 
-
             while (true)
             {
                 int err = SeaDac_DeviceHandler.SM_ReadDigitalInputs(0, 2, input);
@@ -113,10 +110,10 @@ namespace WashEntrance_V1
                 else
                 {
                     // if both of these variables are true then the car is in position 
-                    sonar = GetBit(input[0], 0);
-                    tire_eye = GetBit(input[0], 1);
+                    SD2_input1_sonar = GetBit(input[0], 0);
+                    SD2_input2_tireEye = GetBit(input[0], 1);
 
-                    if (sonar == true && tire_eye == true)
+                    if (SD2_input1_sonar == true && SD2_input2_tireEye == true)
                     {
                         return true; 
                     }
@@ -124,55 +121,64 @@ namespace WashEntrance_V1
             } 
         }
 
+        private static Tuple<bool, bool, bool, bool> GetInputs(SeaMAX SeaDac_DeviceHandler, byte[] input)
+        {
+            int err = SeaDac_DeviceHandler.SM_ReadDigitalInputs(0, 4, input);
+            SD2_input1_sonar = GetBit(input[0], 0);
+            SD2_input2_tireEye = GetBit(input[0], 1);
+            SD2_input3_rollerEye = GetBit(input[0], 2);
+            SD2_input4_resetSigns = GetBit(input[0], 3);
+
+            return Tuple.Create(SD2_input1_sonar, SD2_input2_tireEye, SD2_input3_rollerEye, SD2_input4_resetSigns);
+        }
+
         private static bool RollerMonitoring(SeaMAX SeaDac_DeviceHandler, byte[] input, byte[] output)
         {
             int rollerCounter = 0;
-            bool rollerEye = false; 
-            int err = -1;
+            bool success = false;
             output[0] = 1;
 
-            // write to the fork solenoid relay to lift the fork.
-            while (true)
+            // Write to the fork solenoid relay to lift the fork.
+            while (!success)
             {
-                err = SeaDac_DeviceHandler.SM_WriteDigitalOutputs(2, 1, output);
-                if (err < 0)
+                int errr = SeaDac_DeviceHandler.SM_WriteDigitalOutputs(2, 1, output);
+                if (errr < 0)
                 {
                     Logger.WriteLog("Error outputting to fork solenoid.");
                 }
                 else
                 {
                     SD2_output3_forkSolenoid = true;
-                    break;
+                    success = true;
                 }
             }
 
-            while (true)
+            int err = SeaDac_DeviceHandler.SM_ReadDigitalInputs(2, 1, input);
+            while (err > 0)
             {
-                err = SeaDac_DeviceHandler.SM_ReadDigitalInputs(2, 1, input);
-                if (err > 0)
-                {
-                    SD2_input3_rollerEye = true;
-                }
-                rollerEye = GetBit(input[0], 0);
-                if (rollerEye == true)
+                SD2_input3_rollerEye = GetBit(input[0], 2);
+                if (SD2_input3_rollerEye)
                 {
                     rollerCounter++;
                     if (rollerCounter == 5)
                     {
-                        err = -1; 
+                        err = -1;
                         while (err < 0)
                         {
                             output[0] = 0;
                             err = SeaDac_DeviceHandler.SM_WriteDigitalOutputs(2, 1, output);
                             if (err > 0)
                             {
-                                SD2_output3_forkSolenoid = true;
+                                SD2_output3_forkSolenoid = false;
                             }
                         }
                         return true;
                     }
                 }
+                err = SeaDac_DeviceHandler.SM_ReadDigitalInputs(2, 1, input);
             }
+
+            return false;
         }
 
         // Main SeaLevel Task
@@ -284,18 +290,19 @@ namespace WashEntrance_V1
                                         if (SD2_input4_resetSigns == true)
                                         {
                                             SeaDac2_Output[0] = 0;
-                                            err = SeaDACLite2_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaDac2_Output);
+                                            //err = SeaDACLite2_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaDac2_Output);
+                                            err = SeaDACLite2_DeviceHandler.SM_WriteDigitalOutputs(2, 1, SeaDac2_Output);
                                             carProgrammed = false;
                                             in_position = false;
-                                            SD2_output1_audio = GetBit(SeaDac2_Output[0], 0);
+                                            /*SD2_output1_audio = GetBit(SeaDac2_Output[0], 0);
                                             SD2_output2_signs = GetBit(SeaDac2_Output[0], 1);
                                             SD2_output3_forkSolenoid = GetBit(SeaDac2_Output[0], 2);
 
-                                            err = SeaDACLite2_DeviceHandler.SM_ReadDigitalInputs(0, 4, SeaDac2_Input);
+                                            /*err = SeaDACLite2_DeviceHandler.SM_ReadDigitalInputs(0, 4, SeaDac2_Input);
                                             SD2_input1_sonar = GetBit(SeaDac2_Input[0], 0);
                                             SD2_input2_tireEye = GetBit(SeaDac2_Input[0], 1);
                                             SD2_input3_rollerEye = GetBit(SeaDac2_Input[0], 2);
-                                            SD2_input4_resetSigns = GetBit(SeaDac2_Input[0], 3);
+                                            SD2_input4_resetSigns = GetBit(SeaDac2_Input[0], 3);*/
 
                                             break;
                                         }
@@ -303,6 +310,7 @@ namespace WashEntrance_V1
                                 }
                             }
                         }
+                        Thread.Sleep(3000);
                     }
                 }
             }

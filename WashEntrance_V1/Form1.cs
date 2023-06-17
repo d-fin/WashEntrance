@@ -91,5 +91,7 @@ namespace WashEntrance_V1
         {
             Logger.DeleteOldLines();
         }
+
+    
     }
 }
