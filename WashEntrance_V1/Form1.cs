@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Sealevel;
 
 namespace WashEntrance_V1
 {
@@ -92,6 +93,67 @@ namespace WashEntrance_V1
             Logger.DeleteOldLines();
         }
 
-    
+        private void buttonForkSolTest_Click(object sender, EventArgs e)
+        {
+            SeaMAX SeaLevelDevice = new SeaMAX();
+            byte[] output = new byte[1];
+
+            output[0] = 1;
+            int err = SeaLevelDevice.SM_WriteDigitalOutputs(2, 1, output);
+
+            if (err < 0)
+            {
+                Logger.WriteLog($"Error # {err} - Test Button Fork Solenoid");
+            }
+            else
+            {
+                Logger.WriteLog($"Success - Test Button Fork Solenoid");
+                Thread.Sleep(10000);
+                output[0] = 0;
+                err = SeaLevelDevice.SM_WriteDigitalOutputs(2, 1, output);
+            }
+        }
+
+        private void buttonAudioTest_Click(object sender, EventArgs e)
+        {
+            SeaMAX SeaLevelDevice = new SeaMAX();
+            byte[] output = new byte[1];
+
+            output[0] = 1;
+            int err = SeaLevelDevice.SM_WriteDigitalOutputs(0, 1, output);
+
+            if (err < 0)
+            {
+                Logger.WriteLog($"Error # {err} - Test Button Audio");
+            }
+            else
+            {
+                Logger.WriteLog($"Success - Test Button Audio");
+                Thread.Sleep(10000);
+                output[0] = 0;
+                err = SeaLevelDevice.SM_WriteDigitalOutputs(0, 1, output);
+            }
+        }
+
+        private void buttonSignFlipTest_Click(object sender, EventArgs e)
+        {
+            SeaMAX SeaLevelDevice = new SeaMAX();
+            byte[] output = new byte[1];
+
+            output[0] = 1;
+            int err = SeaLevelDevice.SM_WriteDigitalOutputs(1, 1, output);
+
+            if (err < 0)
+            {
+                Logger.WriteLog($"Error # {err} - Test Button Signs");
+            }
+            else
+            {
+                Logger.WriteLog($"Success - Test Button Signs");
+                Thread.Sleep(10000);
+                output[0] = 0;
+                err = SeaLevelDevice.SM_WriteDigitalOutputs(1, 1, output);
+            }
+        }
     }
 }
