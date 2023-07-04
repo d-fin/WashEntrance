@@ -45,3 +45,7 @@ C:\Users\David\Desktop\Wash Entrance\WashEntrance_V1\obj\Debug\WashEntrance_V1.c
 C:\Users\David\Desktop\Wash Entrance\WashEntrance_V1\obj\Debug\WashEntrance_V1.csproj.CopyComplete
 C:\Users\David\Desktop\Wash Entrance\WashEntrance_V1\obj\Debug\WashEntrance_V1.exe
 C:\Users\David\Desktop\Wash Entrance\WashEntrance_V1\obj\Debug\WashEntrance_V1.pdb
+C:\Users\David$$\Desktop\Projects\WashEntrance_V1\WashEntrance_V1\bin\Debug\System.ValueTuple.dll
+C:\Users\David$$\Desktop\Projects\WashEntrance_V1\WashEntrance_V1\bin\Debug\System.ValueTuple.xml
+C:\Users\David$$\Desktop\Projects\WashEntrance_V1\WashEntrance_V1\obj\Debug\Interop.IWshRuntimeLibrary.dll
+C:\Users\David$$\Desktop\Projects\WashEntrance_V1\WashEntrance_V1\obj\Debug\WashEntrance_V1.csproj.ResolveComReference.cache

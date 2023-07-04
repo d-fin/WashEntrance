@@ -414,6 +414,7 @@
             this.groupBox1.TabIndex = 25;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Test Buttons";
+            this.groupBox1.Visible = false;
             // 
             // Form1
             // 
@@ -431,6 +432,7 @@
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form1";
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.panel1.ResumeLayout(false);
             this.groupBoxDevices.ResumeLayout(false);
             this.groupBoxDevices.PerformLayout();

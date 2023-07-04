@@ -9,6 +9,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Sealevel;
+using IWshRuntimeLibrary;
+using System.IO;
 
 namespace WashEntrance_V1
 {
@@ -18,6 +20,20 @@ namespace WashEntrance_V1
         public Form1()
         {
             InitializeComponent();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            string shortcutPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            string shortcutName = "YourApplication.lnk";
+            string targetPath = Application.ExecutablePath;
+            string iconPath = "C:/Users/David$$/Desktop/Projects/WashEntrance_V1/WashEntrance_V1/Logo.ico";
+
+            WshShell shell = new WshShell();
+            IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(Path.Combine(shortcutPath, shortcutName));
+            shortcut.TargetPath = targetPath;
+            shortcut.IconLocation = iconPath; 
+            shortcut.Save();
         }
 
         private void tmrUpdateForm_Tick(object sender, EventArgs e)
@@ -34,7 +50,7 @@ namespace WashEntrance_V1
             if (SeaLevelThread.SD2_input3_rollerEye) { radRollerEye.Checked = true; }
             else { radRollerEye.Checked = false; }
 
-            if (SeaLevelThread.SD2_input4_resetSigns) { radResetSigns.Checked = true; }
+            if (SeaLevelThread.SD1_input4) { radResetSigns.Checked = true; }
             else { radResetSigns.Checked = false; }
 
             if (SeaLevelThread.SD1_input1_pgmCar) { radPgmCar.Checked = true; }
