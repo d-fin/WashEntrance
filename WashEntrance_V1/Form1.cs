@@ -25,7 +25,7 @@ namespace WashEntrance_V1
         private void Form1_Load(object sender, EventArgs e)
         {
             string shortcutPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            string shortcutName = "YourApplication.lnk";
+            string shortcutName = "Wash Entrance Controller.lnk";
             string targetPath = Application.ExecutablePath;
             string iconPath = "C:/Users/David$$/Desktop/Projects/WashEntrance_V1/WashEntrance_V1/Logo.ico";
 
