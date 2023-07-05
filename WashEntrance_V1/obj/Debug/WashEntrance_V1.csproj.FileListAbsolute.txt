@@ -49,3 +49,26 @@ C:\Users\David$$\Desktop\Projects\WashEntrance_V1\WashEntrance_V1\bin\Debug\Syst
 C:\Users\David$$\Desktop\Projects\WashEntrance_V1\WashEntrance_V1\bin\Debug\System.ValueTuple.xml
 C:\Users\David$$\Desktop\Projects\WashEntrance_V1\WashEntrance_V1\obj\Debug\Interop.IWshRuntimeLibrary.dll
 C:\Users\David$$\Desktop\Projects\WashEntrance_V1\WashEntrance_V1\obj\Debug\WashEntrance_V1.csproj.ResolveComReference.cache
+C:\Users\dfinl\OneDrive\Desktop\WashEntrance_V1\WashEntrance_V1\bin\Debug\ftd2xx.dll
+C:\Users\dfinl\OneDrive\Desktop\WashEntrance_V1\WashEntrance_V1\bin\Debug\SeaMAX.dll
+C:\Users\dfinl\OneDrive\Desktop\WashEntrance_V1\WashEntrance_V1\bin\Debug\Logo.ico
+C:\Users\dfinl\OneDrive\Desktop\WashEntrance_V1\WashEntrance_V1\bin\Debug\WashEntrance_V1.exe.config
+C:\Users\dfinl\OneDrive\Desktop\WashEntrance_V1\WashEntrance_V1\bin\Debug\WashEntrance_V1.exe
+C:\Users\dfinl\OneDrive\Desktop\WashEntrance_V1\WashEntrance_V1\bin\Debug\WashEntrance_V1.pdb
+C:\Users\dfinl\OneDrive\Desktop\WashEntrance_V1\WashEntrance_V1\bin\Debug\System.ValueTuple.dll
+C:\Users\dfinl\OneDrive\Desktop\WashEntrance_V1\WashEntrance_V1\bin\Debug\SeaMAX Dot Net.xml
+C:\Users\dfinl\OneDrive\Desktop\WashEntrance_V1\WashEntrance_V1\bin\Debug\System.ValueTuple.xml
+C:\Users\dfinl\OneDrive\Desktop\WashEntrance_V1\WashEntrance_V1\obj\Debug\WashEntrance_V1.csproj.AssemblyReference.cache
+C:\Users\dfinl\OneDrive\Desktop\WashEntrance_V1\WashEntrance_V1\obj\Debug\Interop.IWshRuntimeLibrary.dll
+C:\Users\dfinl\OneDrive\Desktop\WashEntrance_V1\WashEntrance_V1\obj\Debug\WashEntrance_V1.csproj.ResolveComReference.cache
+C:\Users\dfinl\OneDrive\Desktop\WashEntrance_V1\WashEntrance_V1\obj\Debug\WashEntrance_V1.Form1.resources
+C:\Users\dfinl\OneDrive\Desktop\WashEntrance_V1\WashEntrance_V1\obj\Debug\WashEntrance_V1.Properties.Resources.resources
+C:\Users\dfinl\OneDrive\Desktop\WashEntrance_V1\WashEntrance_V1\obj\Debug\WashEntrance_V1.csproj.GenerateResource.cache
+C:\Users\dfinl\OneDrive\Desktop\WashEntrance_V1\WashEntrance_V1\obj\Debug\WashEntrance_V1.csproj.CoreCompileInputs.cache
+C:\Users\dfinl\OneDrive\Desktop\WashEntrance_V1\WashEntrance_V1\obj\Debug\WashEntrance_V1.csproj.CopyComplete
+C:\Users\dfinl\OneDrive\Desktop\WashEntrance_V1\WashEntrance_V1\obj\Debug\WashEntrance_V1.exe
+C:\Users\dfinl\OneDrive\Desktop\WashEntrance_V1\WashEntrance_V1\obj\Debug\WashEntrance_V1.pdb
+C:\Users\dfinl\OneDrive\Desktop\WashEntrance_V1\WashEntrance_V1\bin\Debug\WashEntrance_V1.exe.manifest
+C:\Users\dfinl\OneDrive\Desktop\WashEntrance_V1\WashEntrance_V1\bin\Debug\WashEntrance_V1.application
+C:\Users\dfinl\OneDrive\Desktop\WashEntrance_V1\WashEntrance_V1\obj\Debug\WashEntrance_V1.exe.manifest
+C:\Users\dfinl\OneDrive\Desktop\WashEntrance_V1\WashEntrance_V1\obj\Debug\WashEntrance_V1.application

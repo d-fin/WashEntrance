@@ -48,12 +48,17 @@ namespace WashEntrance_V1
 
 
 
-        //bit value retrieval method
+        /*
+         GetBit converts input, a byte array, to booleans
+         */
         public static bool GetBit(this byte b, int bitNumber)
         {
             return (b & (1 << bitNumber)) != 0;
         }
 
+        /*
+         SeaDACLiteConnect connects to the SeaLevel devices. 
+         */
         public static bool SeaDACLiteConnect(SeaMAX SeaMAX_DeviceHandler, int num)
         {
             // connect to SeaDAC Lite 
@@ -98,6 +103,9 @@ namespace WashEntrance_V1
             return true;
         }
 
+        /*
+         CarInPosition uses the sonar and the tire eye to determine if the vehicle is in the proper loading position. 
+         */
         public static bool CarInPosition(SeaMAX SeaDac_DeviceHandler, byte[] input)
         {
 
@@ -133,6 +141,10 @@ namespace WashEntrance_V1
             return Tuple.Create(SD2_input1_sonar, SD2_input2_tireEye, SD2_input3_rollerEye, SD2_input4);
         }
 
+        /*
+        RollerMonitoring monitors rollers once the vehicle is in position this function handles firing the fork solenoid and monitoring the rollers. 
+        When two rollers are sent then the fork solenoid is turned off.
+         */
         public static bool RollerMonitoring(SeaMAX SeaDac_DeviceHandler, byte[] input, byte[] output)
         {
             int rollerCounter = 0;
@@ -140,26 +152,41 @@ namespace WashEntrance_V1
             output[0] = 1;
 
             // COMMENT ON BELOW WHILE LOOP 
-            // this may be bad practice to tru and constantly lift the fork 
+            // this may be bad practice to try and constantly lift the fork 
             // should switch to attempt > sleep > attempt. Also need to add a check to make sure a roller isn't right in front of the door.
             // best way to do that is lift the fork when a roller is breaking the roller eye sensor - this will result in the fork 
-            // being lifted when there is for sure no roller at the door. 
+            // being lifted when there is for sure no roller at the door and the same technique for dropping the fork. 
+
+            // NOTE
+            // rollermonitoring V2 in prod works miles better. 
 
 
             // Write to the fork solenoid relay to lift the fork.
             while (!success)
             {
-                int errr = SeaDac_DeviceHandler.SM_WriteDigitalOutputs(2, 1, output);
-                if (errr < 0)
+                while (true)
                 {
-                    Logger.WriteLog("Error outputting to fork solenoid.");
+                    int err2 = SeaDac_DeviceHandler.SM_ReadDigitalInputs(0, 4, input);
+                    bool one = GetBit(input[0], 0);
+                    bool two = GetBit(input[0], 1);
+                    bool three = GetBit(input[0], 2);
+                    bool four = GetBit(input[0], 3);
+                    if (three == true)
+                    {
+                        int errr = SeaDac_DeviceHandler.SM_WriteDigitalOutputs(2, 1, output);
+                        if (errr < 0)
+                        {
+                            Logger.WriteLog("Error outputting to fork solenoid.");
+                        }
+                        else
+                        {
+                            SD2_output3_forkSolenoid = GetBit(output[0], 2);
+                            success = true;
+                            break;
+                        }
+                    }
                 }
-                else
-                {
-                    //SD2_output3_forkSolenoid = true;
-                    SD2_output3_forkSolenoid = GetBit(output[0], 2);
-                    success = true;
-                }
+                
             }
 
 
@@ -209,7 +236,7 @@ namespace WashEntrance_V1
                             {
                                 output[0] = 0;
                                 err = SeaDac_DeviceHandler.SM_WriteDigitalOutputs(2, 1, output);
-                                if (err > 0)
+                                if (err >= 0)
                                 {
                                     SD2_output3_forkSolenoid = false; 
                                     return true;
@@ -221,7 +248,45 @@ namespace WashEntrance_V1
             }
         }
 
-        // Main SeaLevel Task
+        /*
+         Reset awaits the Reset flag from the TW5 box, the reset flag tells us that the vehicle is in motion and we can work on programming the next vehicle. 
+         */
+        public static bool Reset(SeaMAX SeaDac_DeviceHandler, byte[] input, byte[] output)
+        {
+            int err; 
+            while (true)
+            {
+                //err = SeaDACLite1_DeviceHandler.SM_ReadDigitalInputs(3, 1, SeaDac1_Input);
+                err = SeaDac_DeviceHandler.SM_ReadDigitalInputs(0, 4, input);
+                SD1_input1_pgmCar = GetBit(input[0], 0);
+                SD1_input2_pgmCarButton = GetBit(input[0], 1);
+                SD1_input3_resetSigns = GetBit(input[0], 2);
+                Logger.WriteLog($"{SD1_input1_pgmCar}, {SD1_input2_pgmCarButton}, {SD1_input3_resetSigns}");
+                if (SD1_input3_resetSigns == true)
+                {
+                    output[0] = 0;
+                    err = SeaDac_DeviceHandler.SM_WriteDigitalOutputs(1, 1, output);
+                    if (err < 0)
+                    {
+                        return true; 
+                    }
+                }
+                else if (SD1_input2_pgmCarButton == true)
+                {
+                    if (RollerMonitoring(SeaDac_DeviceHandler, input, output) == true)
+                    {
+                        Logger.WriteLog("Extra set of rollers sent.");
+                    }
+                    else
+                    {
+                        Logger.WriteLog("Error outputting rollers.");
+                    }
+                }
+            }
+        }
+        /*
+         Main Function
+         */
         public static void SeaLevelTask()
         {
             // local variables 
@@ -240,7 +305,7 @@ namespace WashEntrance_V1
             while (true)
             {
                 seaDAC1 = SeaDACLiteConnect(SeaDACLite1_DeviceHandler, 0);
-                seaDAC2 = SeaDACLiteConnect(SeaDACLite2_DeviceHandler, 1);
+                seaDAC2 = SeaDACLiteConnect(SeaDACLite2_DeviceHandler, 0);
                 if (seaDAC1 && seaDAC2) 
                 { 
                     break; 
@@ -264,35 +329,33 @@ namespace WashEntrance_V1
                     err = SeaDACLite2_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaDac2_Output);
                     while (true)
                     {
-                        err = SeaDACLite1_DeviceHandler.SM_WriteDigitalOutputs(0, 2, SeaDac1_Input);
+                        // Look to see if the TW box is signaling for a vehicle to be programmed or if the manual programming button is pressed (extra roller btn)
+                        // do nothing until either one of these are true!!!!             
+                        err = SeaDACLite1_DeviceHandler.SM_ReadDigitalInputs(0, 2, SeaDac1_Input);
+                        SD1_input1_pgmCar = GetBit(SeaDac1_Input[0], 0);
+                        SD1_input2_pgmCarButton = GetBit(SeaDac1_Input[0], 1);
                         if (err < 0)
                         {
                             Logger.WriteLog("Error reading input 1 of device 1.");
                         }
                         else
                         {
-                            // Look to see if the TW box is signaling for a vehicle to be programmed or if the manual programming button is pressed (extra roller btn)
-                            SD1_input1_pgmCar = GetBit(SeaDac1_Input[0], 0);
-                            SD1_input2_pgmCarButton = GetBit(SeaDac1_Input[0], 1);
-
+                            //SD1_input1_pgmCar = true;
                             if (SD1_input1_pgmCar == true || SD1_input2_pgmCarButton == true)
                             {
                                 // this means a car is ready to be programmed, now we need to make sure the car is in position. 
                                 carProgrammed = true;
-                                int attempts = 0;
+                                //int attempts = 0;
                                 while (in_position == false)
                                 {
                                     in_position = CarInPosition(SeaDACLite2_DeviceHandler, SeaDac2_Input);
                                     err = SeaDACLite2_DeviceHandler.SM_ReadDigitalInputs(0, 4, SeaDac2_Input);
-
-                                    //Tuple<bool, bool, bool, bool> results = GetInputs(SeaDACLite2_DeviceHandler, SeaDac2_Input);
-                                    //err = SeaDACLite2_DeviceHandler.SM_ReadDigitalInputs(1, 2, SeaDac2_Input);
-                                    attempts++;
+                                    /*attempts++;
                                     if (attempts > 100)
                                     {
                                         // there is an error reading the inputs which means there is a sensor issue or a device issue. 
                                         Logger.WriteLog("There has been 100 attempts at reading the input.");
-                                    }
+                                    }*/
                                     if (in_position == true)
                                     {
                                         // below is firing the signs and audio relays 
@@ -300,7 +363,8 @@ namespace WashEntrance_V1
                                         //                 Stop sign (N/O) is turned on 
                                         //                 Audio is played - audio is a dry contact off of the N/O device relay. 
                                         SeaDac2_Output[0] = 1;
-                                        err = SeaDACLite2_DeviceHandler.SM_WriteDigitalOutputs(0, 2, SeaDac2_Output);
+                                        err = SeaDACLite2_DeviceHandler.SM_WriteDigitalOutputs(0, 1, SeaDac2_Output);
+                                        err = SeaDACLite2_DeviceHandler.SM_WriteDigitalOutputs(1, 1, SeaDac2_Output);
                                         if (err >= 0)
                                         {
                                             SD2_output1_audio = true;
@@ -318,22 +382,71 @@ namespace WashEntrance_V1
                                         // the fork solenoid also needs to be fired but function is defined for that since we are implementing roller monitoring. (done in function)
                                         //bool carMoving = RollerMonitoring(SeaDACLite2_DeviceHandler, SeaDac2_Input, SeaDac2_Output);
                                         //if (carMoving == true)
-                                        if (RollerMonitoring(SeaDACLite2_DeviceHandler, SeaDac2_Input, SeaDac2_Output) == true)
+                                        Thread.Sleep(1200);
+                                        bool carMoving = false;
+                                        while (carMoving == false)
+                                        {
+                                            carMoving = RollerMonitoring(SeaDACLite2_DeviceHandler, SeaDac2_Input, SeaDac2_Output);
+                                        }
+
+                                        // wait for reset sign to be true. 
+                                        // We want to ignore all inputs when the a car is programmed (we dont want to program another car too early). 
+                                        // 
+                                        // NOTE:
+                                        // Having issues with ResetLights coming from TW5 box - currently using a 6000ms sleep in its place. 
+                                        // once I get ResetSign working then I dont want to flip sign until the signal comes through
+                                        // (this means a vehicle is not in motion and new set of rollers need to be sent manually from extra roller button) 
+                                        //bool reset = false;
+                                        /*bool reset = Reset(SeaDACLite1_DeviceHandler, SeaDac1_Input, SeaDac1_Output);
+                                        if (reset == true)
+                                        {
+                                            SeaDac2_Output[0] = 0;
+                                            err = SeaDACLite2_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaDac2_Output);
+                                            in_position = false;
+                                            carProgrammed = false;
+                                            SD1_input1_pgmCar = false;
+                                            SD1_input2_pgmCarButton = false;
+                                            SD1_input3_resetSigns = false; 
+                                            break;
+                                        }*/
+                                        /*if (RollerMonitoring(SeaDACLite2_DeviceHandler, SeaDac2_Input, SeaDac2_Output) == true)
                                         {
                                             Logger.WriteLog("Rollers outputted and car is moving.");
                                         }
                                         else
                                         {
                                             Logger.WriteLog("Error outputting rollers.");
-                                        }
+                                        }*/
                                     }
                                 }
 
+                                if (carProgrammed == true)
+                                {
+                                    Thread.Sleep(6200);
+                                    bool temp = true;
+                                    if (temp == true)
+                                    {
+                                        SeaDac2_Output[0] = 0;
+                                        err = SeaDACLite2_DeviceHandler.SM_WriteDigitalOutputs(1, 1, SeaDac2_Output);
+                                        SeaDac2_Output[0] = 0;
+                                        err = SeaDACLite2_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaDac2_Output);
+                                        in_position = false;
+                                        carProgrammed = false;
+                                        SD1_input1_pgmCar = false;
+                                        SD1_input2_pgmCarButton = false;
+                                        SD1_input3_resetSigns = false;
+                                        break;
+                                    }
+                                }
                                 // wait for reset sign to be true. 
                                 // We want to ignore all inputs when the a car is programmed (we dont want to program another car too early). 
                                 // 
-
-                                if (carProgrammed == true)
+                                // NOTE:
+                                // Having issues with ResetLights coming from TW5 box - currently using a 6000ms sleep in its place. 
+                                // once I get ResetSign working then I dont want to flip sign until the signal comes through
+                                // (this means a vehicle is not in motion and new set of rollers need to be sent manually from extra roller button) 
+                                
+                                /*if (carProgrammed == true)
                                 {
                                     //Thread.Sleep(5000);
                                     while (true)
@@ -344,16 +457,21 @@ namespace WashEntrance_V1
                                         SD1_input2_pgmCarButton = GetBit(SeaDac1_Input[0], 1);
                                         SD1_input3_resetSigns = GetBit(SeaDac1_Input[0], 2);
 
+                                        Thread.Sleep(6000);
+                                        bool temp = true; 
+                                        
                                         if (SD1_input3_resetSigns == true)
+                                        //if (temp == true)
                                         {
+                                            SeaDac2_Output[0] = 0;
+                                            err = SeaDACLite2_DeviceHandler.SM_WriteDigitalOutputs(1, 1, SeaDac2_Output);
                                             break;
                                         }
                                         else if (SD1_input2_pgmCarButton == true)
                                         {
                                             if (RollerMonitoring(SeaDACLite2_DeviceHandler, SeaDac2_Input, SeaDac2_Output) == true)
                                             {
-                                                Logger.WriteLog("Rollers outputted and car is moving.");
-                                                break;
+                                                Logger.WriteLog("Extra set of rollers sent.");
                                             }
                                             else
                                             {
@@ -366,7 +484,7 @@ namespace WashEntrance_V1
                                     err = SeaDACLite2_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaDac2_Output);
                                     in_position = false;
                                     carProgrammed = false; 
-                                }
+                                }*/
                             }
                         }
                         Thread.Sleep(3000);
