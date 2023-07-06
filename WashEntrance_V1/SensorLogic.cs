@@ -109,6 +109,7 @@ namespace WashEntrance_V1
          */
         public static bool CarInPosition(SeaMAX SeaDac_DeviceHandler, byte[] input)
         {
+            
             Logger.WriteLog("Entering CarInPosition()");
             while (true)
             {
@@ -117,6 +118,7 @@ namespace WashEntrance_V1
                 SD2_input1_sonar = GetBit(input[0], 0);
                 if (SD2_input1_sonar == true)
                 {
+                    Thread.Sleep(100); // adding a 100ms pause to prevent longer trucks from tripping both sensors
                     err = SeaDac_DeviceHandler.SM_ReadDigitalInputs(1, 1, input);
                     SD2_input2_tireEye = GetBit(input[0], 1);
                     Logger.WriteLog($"Sonar - {SD2_input1_sonar} : Tire Eye - {SD2_input2_tireEye}");
@@ -131,7 +133,31 @@ namespace WashEntrance_V1
                 }
             }
         }
+       /* public static async Task<bool> CarInPosition(SeaMAX SeaDac_DeviceHandler, byte[] input)
+        {
+            Logger.WriteLog("Entering CarInPosition()");
+            while (true)
+            {
+                int err = SeaDac_DeviceHandler.SM_ReadDigitalInputs(0, 1, input);
 
+                SD2_input1_sonar = GetBit(input[0], 0);
+                if (SD2_input1_sonar == true)
+                {
+                    await Task.Delay(TimeSpan.FromMilliseconds(100));
+                    err = SeaDac_DeviceHandler.SM_ReadDigitalInputs(1, 1, input);
+                    SD2_input2_tireEye = GetBit(input[0], 1);
+                    Logger.WriteLog($"Sonar - {SD2_input1_sonar} : Tire Eye - {SD2_input2_tireEye}");
+                    if (SD2_input2_tireEye == true && SD2_input1_sonar == true)
+                    {
+                        return true;
+                    }
+                    else if (SD2_input2_tireEye == false)
+                    {
+                        SD2_input1_sonar = false;
+                    }
+                }
+            }
+        }*/
         public static Tuple<bool, bool, bool, bool> GetInputs(SeaMAX SeaDac_DeviceHandler, byte[] input)
         {
             int err = SeaDac_DeviceHandler.SM_ReadDigitalInputs(0, 4, input);
@@ -153,16 +179,8 @@ namespace WashEntrance_V1
             bool success = false;
             output[0] = 1;
 
-            // COMMENT ON BELOW WHILE LOOP 
-            // this may be bad practice to try and constantly lift the fork 
-            // should switch to attempt > sleep > attempt. Also need to add a check to make sure a roller isn't right in front of the door.
-            // best way to do that is lift the fork when a roller is breaking the roller eye sensor - this will result in the fork 
-            // being lifted when there is for sure no roller at the door and the same technique for dropping the fork. 
-
             // NOTE
             // rollermonitoring V2 in prod works miles better. 
-
-
             // Write to the fork solenoid relay to lift the fork.
             while (!success)
             {
