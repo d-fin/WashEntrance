@@ -16,7 +16,7 @@ namespace WashEntrance_V1
 
             using (StreamWriter writer = new StreamWriter(logPath, true))
             {
-                writer.WriteLine($"{DateTime.Now} : {message}");
+                writer.WriteLine($"{DateTime.Now} - {message}");
             }
         }
 
