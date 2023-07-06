@@ -14,18 +14,19 @@ namespace WashEntrance_V1
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        static async Task Main()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
             Logger.WriteLog("Starting Wash Entrance Controller");
 
-            Thread SeaLevelBackground = new Thread(SeaLevelThread.SeaLevelTask);
-            SeaLevelBackground.IsBackground = true;
-            SeaLevelBackground.Start();
+            Task seaLevelTask = SeaLevelThread.SeaLevelTask();
 
             Application.Run(new Form1());
+
+            await seaLevelTask;
+
             Logger.WriteLog("Ending Wash Entrance Controller");
         }
     }

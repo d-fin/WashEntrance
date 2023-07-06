@@ -1,0 +1,5 @@
+@echo off
+taskkill /f /im Application.exe
+
+@echo off
+start "" "C:\Path\To\Application.exe"
