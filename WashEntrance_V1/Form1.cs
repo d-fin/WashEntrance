@@ -27,7 +27,8 @@ namespace WashEntrance_V1
             string shortcutPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             string shortcutName = "Wash Entrance Controller.lnk";
             string targetPath = Application.ExecutablePath;
-            string iconPath = "C:/Users/dfinl/OneDrive/Desktop/WashEntrance_V1/WashEntrance_V1/Logo.ico";
+            //string iconPath = "C:/Users/dfinl/OneDrive/Desktop/WashEntrance_V1/WashEntrance_V1/Logo.ico";
+            string iconPath = "C:/Users/David$$/Desktop/TESTDEPLOY/WashEntrance_V1/Logo.ico";
 
             WshShell shell = new WshShell();
             IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(Path.Combine(shortcutPath, shortcutName));

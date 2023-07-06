@@ -72,3 +72,8 @@ C:\Users\dfinl\OneDrive\Desktop\WashEntrance_V1\WashEntrance_V1\bin\Debug\WashEn
 C:\Users\dfinl\OneDrive\Desktop\WashEntrance_V1\WashEntrance_V1\bin\Debug\WashEntrance_V1.application
 C:\Users\dfinl\OneDrive\Desktop\WashEntrance_V1\WashEntrance_V1\obj\Debug\WashEntrance_V1.exe.manifest
 C:\Users\dfinl\OneDrive\Desktop\WashEntrance_V1\WashEntrance_V1\obj\Debug\WashEntrance_V1.application
+C:\Users\David$$\Desktop\Projects\WashEntrance_V1\WashEntrance_V1\bin\Debug\Logo.ico
+C:\Users\David$$\Desktop\Projects\WashEntrance_V1\WashEntrance_V1\bin\Debug\WashEntrance_V1.exe.manifest
+C:\Users\David$$\Desktop\Projects\WashEntrance_V1\WashEntrance_V1\bin\Debug\WashEntrance_V1.application
+C:\Users\David$$\Desktop\Projects\WashEntrance_V1\WashEntrance_V1\obj\Debug\WashEntrance_V1.exe.manifest
+C:\Users\David$$\Desktop\Projects\WashEntrance_V1\WashEntrance_V1\obj\Debug\WashEntrance_V1.application

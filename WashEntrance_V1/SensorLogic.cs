@@ -130,35 +130,6 @@ namespace WashEntrance_V1
                     }
                 }
             }
-
-            //int err = SeaDac_DeviceHandler.SM_ReadDigitalInputs(0, 1, input);
-            //if (err < 0)
-            //{
-            //    Logger.WriteLog("Error reading sonar and tire eye inputs");
-            //    return false;
-            //}
-            //else
-            //{
-            //    // if both of these variables are true then the car is in position 
-            //    while (true)
-            //    {
-            //        int err = SeaDac_DeviceHandler.SM_ReadDigitalInputs(0, 1, input);
-            //        SD2_input1_sonar = GetBit(input[0], 0);
-            //        if (SD2_input1_sonar == true)
-            //        {
-
-            //        }
-            //    }
-
-            //    SD2_input2_tireEye = GetBit(input[0], 1);
-
-            //    if (SD2_input1_sonar == true && SD2_input2_tireEye == true)
-            //    {
-            //        return true;
-            //    }
-            //}
-            //return false;
-
         }
 
         public static Tuple<bool, bool, bool, bool> GetInputs(SeaMAX SeaDac_DeviceHandler, byte[] input)
@@ -264,55 +235,46 @@ namespace WashEntrance_V1
         /*
          Reset awaits the Reset flag from the TW5 box, the reset flag tells us that the vehicle is in motion and we can work on programming the next vehicle. 
         
-         NOTE : 
-            Maybe instead of reset lights, the sign wont flip back until the Sonars broken + some ms time after?
-         */
-        public static bool Reset(SeaMAX SeaDac_DeviceHandler, byte[] input, byte[] output)
+        */
+        public static bool Reset(SeaMAX SeaDac_DeviceHandler, SeaMAX SeaDac_DeviceHandler2, byte[] input, byte[] input2, byte[] output, byte[] output2)
         {
             int err;
-            int i = 0;
             Logger.WriteLog("Starting Reset()");
+
             while (true)
             {
-              
-                err = SeaDac_DeviceHandler.SM_ReadDigitalInputs(0, 4, input);
-                SD1_input1_pgmCar = GetBit(input[0], 0);
-                SD1_input2_pgmCarButton = GetBit(input[0], 1);
-                SD1_input3_resetSigns = GetBit(input[0], 2);
-                //Logger.WriteLog($"{SD1_input1_pgmCar}, {SD1_input2_pgmCarButton}, {SD1_input3_resetSigns}");
-                if (SD1_input3_resetSigns == true)
+                err = SeaDac_DeviceHandler2.SM_ReadDigitalInputs(0, 1, input2);
+                bool vehicleInSonar = GetBit(input2[0], 0);
+
+                if (vehicleInSonar == true)
                 {
-                    output[0] = 0;
-                    err = SeaDac_DeviceHandler.SM_WriteDigitalOutputs(1, 1, output);
-                    if (err < 0)
+                    // if the vehicle is still in the sonars beam then we dont want the "Stop" sign to change, this is to prevent user error if the wash were to be stopped while 
+                    // they are still in the loading bay. It is also to mitigate error if the user doesn't properly load and the rollers go past the vehicle, then we need to send 
+                    // an extra set of rollers. 
+                    Thread.Sleep(100);
+                    err = SeaDac_DeviceHandler.SM_ReadDigitalInputs(1, 1, input);  
+                    SD1_input2_pgmCarButton = GetBit(input[0], 1);
+
+                    if (SD1_input2_pgmCarButton == true)
                     {
-                        Logger.WriteLog("Exiting Reset() from reset flag");
-                        return true;
+                        if (RollerMonitoring(SeaDac_DeviceHandler2, input2, output2) == true)
+                        {
+                            Logger.WriteLog("Extra set of rollers sent.");
+                        }
+                        else
+                        {
+                            Logger.WriteLog("Error outputting rollers.");
+                        }
                     }
-                }
-                else if (SD1_input2_pgmCarButton == true)
-                {
-                    if (RollerMonitoring(SeaDac_DeviceHandler, input, output) == true)
-                    {
-                        Logger.WriteLog("Extra set of rollers sent.");
-                    }
-                    else
-                    {
-                        Logger.WriteLog("Error outputting rollers.");
-                    }
-                }
-                else if (i == 2500)
-                {
-                    Logger.WriteLog("Exiting Reset() - timed out waiting for reset flag from TW5");
-                    Thread.Sleep(3000);
-                    return true;
                 }
                 else
                 {
-                    i++;
+                    Thread.Sleep(1000);
+                    return true;
                 }
             }
         }
+
         /*
          Main Function
          */
@@ -329,6 +291,7 @@ namespace WashEntrance_V1
             byte[] SeaDac2_Output = new byte[1];
 
             int err;
+            int i = 0;
 
             // make sure the two SeaLevel devices are connected if not keep attempting and do nothing. 
             while (true)
@@ -343,7 +306,6 @@ namespace WashEntrance_V1
 
             try
             {
-                int i = 0;
                 while (true)
                 {
                     if (Form1.Shutdown)
@@ -359,8 +321,10 @@ namespace WashEntrance_V1
                         Logger.DeleteOldLines();
                         i = 0;
                     }
+
                     SeaDac2_Output[0] = 0;
                     err = SeaDACLite2_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaDac2_Output);
+
                     while (true)
                     {
                         // Look to see if the TW box is signaling for a vehicle to be programmed or if the manual programming button is pressed (extra roller btn)
@@ -434,7 +398,7 @@ namespace WashEntrance_V1
                                 // (this means a vehicle is not in motion and new set of rollers need to be sent manually from extra roller button) 
 
                                 Thread.Sleep(1000);
-                                bool reset = Reset(SeaDACLite1_DeviceHandler, SeaDac1_Input, SeaDac1_Output);
+                                bool reset = Reset(SeaDACLite1_DeviceHandler, SeaDACLite2_DeviceHandler, SeaDac1_Input, SeaDac2_Input, SeaDac1_Output, SeaDac2_Output);
                                 if (reset == true)
                                 {
                                     SeaDac2_Output[0] = 0;
