@@ -1,6 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\packages",
+    "\\WashEntrance_V1"
   ],
+  "SelectedNode": "\\WashEntrance_V1.sln",
   "PreviewInSolutionExplorer": false
 }
