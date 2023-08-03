@@ -1,0 +1,23 @@
+﻿<Properties StartupConfiguration="{A1AC8176-EF24-44A8-AC2F-664D86ADE291}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="WashEntrance_V1/SensorLogic.cs">
+    <Files>
+      <File FileName="WashEntrance_V1/SensorLogic.cs" Line="145" Column="42" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="WashEntrance_V1" expanded="True">
+            <Node name="WashEntrance_V1" expanded="True" />
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.ItemProperties.WashEntrance__V1 PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MultiItemStartupConfigurations />
+</Properties>

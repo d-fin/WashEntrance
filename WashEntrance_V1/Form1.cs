@@ -27,7 +27,7 @@ namespace WashEntrance_V1
             string shortcutPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             string shortcutName = "Wash Entrance Controller.lnk";
             string targetPath = Application.ExecutablePath;
-            string iconPath = "C:/Users/David$$/Desktop/Projects/WashEntrance_V1/WashEntrance_V1/Logo.ico";
+            string iconPath = "C:/Users/dfinl/OneDrive/Desktop/WashEntrance_V1/WashEntrance_V1/Logo.ico";
 
             WshShell shell = new WshShell();
             IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(Path.Combine(shortcutPath, shortcutName));
@@ -41,6 +41,7 @@ namespace WashEntrance_V1
             if (SeaLevelThread.in_position) { radInPosition.Checked = true; }
             else { radInPosition.Checked = false; }
 
+            // SeaLevel Device 2 inputs
             if (SeaLevelThread.SD2_input1_sonar) { radSonar.Checked = true; }
             else { radSonar.Checked = false; }
 
@@ -50,12 +51,20 @@ namespace WashEntrance_V1
             if (SeaLevelThread.SD2_input3_rollerEye) { radRollerEye.Checked = true; }
             else { radRollerEye.Checked = false; }
 
-            if (SeaLevelThread.SD1_input4) { radResetSigns.Checked = true; }
-            else { radResetSigns.Checked = false; }
-
+            //SeaLevel Device 1 inputs
             if (SeaLevelThread.SD1_input1_pgmCar) { radPgmCar.Checked = true; }
             else { radPgmCar.Checked = false; }
 
+            if (SeaLevelThread.SD1_input2_pgmCarButton) { radBtnExtraRoller.Checked = true; }
+            else { radBtnExtraRoller.Checked = false; }
+
+            if (SeaLevelThread.SD1_input3_resetSigns) { radResetSigns.Checked = true; }
+            else { radResetSigns.Checked = false; }
+
+            if (SeaLevelThread.SD1_input4) { radResetSigns.Checked = true; }
+            else { radResetSigns.Checked = false; }
+
+            //SeaLevel Device 2 outputs
             if (SeaLevelThread.SD2_output1_audio) { radAudio.Checked = true; }
             else { radAudio.Checked = false; }
             
@@ -72,8 +81,7 @@ namespace WashEntrance_V1
             if (SeaLevelThread.SD2_output3_forkSolenoid) { radFork.Checked = true; }
             else { radFork.Checked = false; }
             
-            
-
+            // SeaLevel Devices online/offline
             if (SeaLevelThread.seaDAC1) 
             { 
                 radSeaDACLite0.Checked = true;

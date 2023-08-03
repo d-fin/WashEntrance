@@ -13,11 +13,18 @@ namespace WashEntrance_V1
         public static void WriteLog(string message)
         {
             string logPath = ConfigurationManager.AppSettings["logPath"];
-
-            using (StreamWriter writer = new StreamWriter(logPath, true))
+            try
             {
-                writer.WriteLine($"{DateTime.Now} : {message}");
+                using (StreamWriter writer = new StreamWriter(logPath, true))
+                {
+                    writer.WriteLine($"{DateTime.Now} : {message}");
+                }
             }
+            catch (Exception e)
+            {
+                
+            }
+            
         }
 
         public static void DeleteOldLines()
