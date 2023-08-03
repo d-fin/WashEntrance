@@ -44,22 +44,16 @@
             this.radAudio = new System.Windows.Forms.RadioButton();
             this.radStop = new System.Windows.Forms.RadioButton();
             this.radGoSign = new System.Windows.Forms.RadioButton();
-            this.radInPosition = new System.Windows.Forms.RadioButton();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.groupBoxDevices = new System.Windows.Forms.GroupBox();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.radBtnExtraRoller = new System.Windows.Forms.RadioButton();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.buttonForkSolTest = new System.Windows.Forms.Button();
-            this.buttonAudioTest = new System.Windows.Forms.Button();
-            this.buttonSignFlipTest = new System.Windows.Forms.Button();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.radBtnExtraRoller = new System.Windows.Forms.RadioButton();
             this.panel1.SuspendLayout();
             this.groupBoxDevices.SuspendLayout();
             this.panel3.SuspendLayout();
-            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // radTireEye
@@ -70,10 +64,10 @@
             this.radTireEye.AutoCheck = false;
             this.radTireEye.AutoSize = true;
             this.radTireEye.ForeColor = System.Drawing.Color.White;
-            this.radTireEye.Location = new System.Drawing.Point(45, 107);
+            this.radTireEye.Location = new System.Drawing.Point(225, 140);
             this.radTireEye.Margin = new System.Windows.Forms.Padding(4);
             this.radTireEye.Name = "radTireEye";
-            this.radTireEye.Size = new System.Drawing.Size(79, 21);
+            this.radTireEye.Size = new System.Drawing.Size(110, 29);
             this.radTireEye.TabIndex = 0;
             this.radTireEye.TabStop = true;
             this.radTireEye.Text = "Tire Eye";
@@ -87,10 +81,10 @@
             this.radRollerEye.AutoCheck = false;
             this.radRollerEye.AutoSize = true;
             this.radRollerEye.ForeColor = System.Drawing.Color.White;
-            this.radRollerEye.Location = new System.Drawing.Point(45, 73);
+            this.radRollerEye.Location = new System.Drawing.Point(225, 106);
             this.radRollerEye.Margin = new System.Windows.Forms.Padding(4);
             this.radRollerEye.Name = "radRollerEye";
-            this.radRollerEye.Size = new System.Drawing.Size(91, 21);
+            this.radRollerEye.Size = new System.Drawing.Size(125, 29);
             this.radRollerEye.TabIndex = 1;
             this.radRollerEye.TabStop = true;
             this.radRollerEye.Text = "Roller Eye";
@@ -104,10 +98,10 @@
             this.radFork.AutoCheck = false;
             this.radFork.AutoSize = true;
             this.radFork.ForeColor = System.Drawing.Color.White;
-            this.radFork.Location = new System.Drawing.Point(236, 73);
+            this.radFork.Location = new System.Drawing.Point(660, 105);
             this.radFork.Margin = new System.Windows.Forms.Padding(4);
             this.radFork.Name = "radFork";
-            this.radFork.Size = new System.Drawing.Size(76, 21);
+            this.radFork.Size = new System.Drawing.Size(106, 29);
             this.radFork.TabIndex = 2;
             this.radFork.TabStop = true;
             this.radFork.Text = "Fork Up";
@@ -153,7 +147,7 @@
             this.radSeaDACLite0.Location = new System.Drawing.Point(47, 38);
             this.radSeaDACLite0.Margin = new System.Windows.Forms.Padding(4);
             this.radSeaDACLite0.Name = "radSeaDACLite0";
-            this.radSeaDACLite0.Size = new System.Drawing.Size(133, 25);
+            this.radSeaDACLite0.Size = new System.Drawing.Size(198, 36);
             this.radSeaDACLite0.TabIndex = 6;
             this.radSeaDACLite0.TabStop = true;
             this.radSeaDACLite0.Text = "SeaDAC Lite 0";
@@ -170,7 +164,7 @@
             this.radSeaConnect.Location = new System.Drawing.Point(47, 80);
             this.radSeaConnect.Margin = new System.Windows.Forms.Padding(4);
             this.radSeaConnect.Name = "radSeaConnect";
-            this.radSeaConnect.Size = new System.Drawing.Size(133, 25);
+            this.radSeaConnect.Size = new System.Drawing.Size(198, 36);
             this.radSeaConnect.TabIndex = 7;
             this.radSeaConnect.Text = "SeaDAC Lite 1";
             this.radSeaConnect.UseVisualStyleBackColor = true;
@@ -202,10 +196,10 @@
             this.radPgmCar.AutoCheck = false;
             this.radPgmCar.AutoSize = true;
             this.radPgmCar.ForeColor = System.Drawing.Color.White;
-            this.radPgmCar.Location = new System.Drawing.Point(45, 176);
+            this.radPgmCar.Location = new System.Drawing.Point(225, 209);
             this.radPgmCar.Margin = new System.Windows.Forms.Padding(4);
             this.radPgmCar.Name = "radPgmCar";
-            this.radPgmCar.Size = new System.Drawing.Size(106, 21);
+            this.radPgmCar.Size = new System.Drawing.Size(148, 29);
             this.radPgmCar.TabIndex = 10;
             this.radPgmCar.TabStop = true;
             this.radPgmCar.Text = "Program Car";
@@ -219,10 +213,10 @@
             this.radSonar.AutoCheck = false;
             this.radSonar.AutoSize = true;
             this.radSonar.ForeColor = System.Drawing.Color.White;
-            this.radSonar.Location = new System.Drawing.Point(45, 142);
+            this.radSonar.Location = new System.Drawing.Point(225, 175);
             this.radSonar.Margin = new System.Windows.Forms.Padding(4);
             this.radSonar.Name = "radSonar";
-            this.radSonar.Size = new System.Drawing.Size(64, 21);
+            this.radSonar.Size = new System.Drawing.Size(90, 29);
             this.radSonar.TabIndex = 11;
             this.radSonar.TabStop = true;
             this.radSonar.Text = "Sonar";
@@ -236,10 +230,10 @@
             this.radResetSigns.AutoCheck = false;
             this.radResetSigns.AutoSize = true;
             this.radResetSigns.ForeColor = System.Drawing.Color.White;
-            this.radResetSigns.Location = new System.Drawing.Point(45, 211);
+            this.radResetSigns.Location = new System.Drawing.Point(225, 244);
             this.radResetSigns.Margin = new System.Windows.Forms.Padding(4);
             this.radResetSigns.Name = "radResetSigns";
-            this.radResetSigns.Size = new System.Drawing.Size(95, 21);
+            this.radResetSigns.Size = new System.Drawing.Size(132, 29);
             this.radResetSigns.TabIndex = 12;
             this.radResetSigns.TabStop = true;
             this.radResetSigns.Text = "Sign Reset";
@@ -253,10 +247,10 @@
             this.radAudio.AutoCheck = false;
             this.radAudio.AutoSize = true;
             this.radAudio.ForeColor = System.Drawing.Color.White;
-            this.radAudio.Location = new System.Drawing.Point(236, 184);
+            this.radAudio.Location = new System.Drawing.Point(660, 216);
             this.radAudio.Margin = new System.Windows.Forms.Padding(4);
             this.radAudio.Name = "radAudio";
-            this.radAudio.Size = new System.Drawing.Size(62, 21);
+            this.radAudio.Size = new System.Drawing.Size(88, 29);
             this.radAudio.TabIndex = 13;
             this.radAudio.TabStop = true;
             this.radAudio.Text = "Audio";
@@ -270,10 +264,10 @@
             this.radStop.AutoCheck = false;
             this.radStop.AutoSize = true;
             this.radStop.ForeColor = System.Drawing.Color.White;
-            this.radStop.Location = new System.Drawing.Point(236, 146);
+            this.radStop.Location = new System.Drawing.Point(660, 178);
             this.radStop.Margin = new System.Windows.Forms.Padding(4);
             this.radStop.Name = "radStop";
-            this.radStop.Size = new System.Drawing.Size(146, 21);
+            this.radStop.Size = new System.Drawing.Size(202, 29);
             this.radStop.TabIndex = 14;
             this.radStop.TabStop = true;
             this.radStop.Text = "Stop Car in Neutral";
@@ -287,31 +281,14 @@
             this.radGoSign.AutoCheck = false;
             this.radGoSign.AutoSize = true;
             this.radGoSign.ForeColor = System.Drawing.Color.White;
-            this.radGoSign.Location = new System.Drawing.Point(236, 110);
+            this.radGoSign.Location = new System.Drawing.Point(660, 142);
             this.radGoSign.Margin = new System.Windows.Forms.Padding(4);
             this.radGoSign.Name = "radGoSign";
-            this.radGoSign.Size = new System.Drawing.Size(151, 21);
+            this.radGoSign.Size = new System.Drawing.Size(210, 29);
             this.radGoSign.TabIndex = 15;
             this.radGoSign.TabStop = true;
             this.radGoSign.Text = "Please Pull Forward";
             this.radGoSign.UseVisualStyleBackColor = true;
-            // 
-            // radInPosition
-            // 
-            this.radInPosition.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.radInPosition.AutoCheck = false;
-            this.radInPosition.AutoSize = true;
-            this.radInPosition.ForeColor = System.Drawing.Color.White;
-            this.radInPosition.Location = new System.Drawing.Point(45, 333);
-            this.radInPosition.Margin = new System.Windows.Forms.Padding(4);
-            this.radInPosition.Name = "radInPosition";
-            this.radInPosition.Size = new System.Drawing.Size(117, 21);
-            this.radInPosition.TabIndex = 17;
-            this.radInPosition.TabStop = true;
-            this.radInPosition.Text = "Car in Position";
-            this.radInPosition.UseVisualStyleBackColor = true;
             // 
             // panel1
             // 
@@ -350,7 +327,7 @@
             this.groupBoxDevices.Controls.Add(this.radSeaConnect);
             this.groupBoxDevices.Font = new System.Drawing.Font("Leelawadee UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBoxDevices.ForeColor = System.Drawing.Color.White;
-            this.groupBoxDevices.Location = new System.Drawing.Point(302, 24);
+            this.groupBoxDevices.Location = new System.Drawing.Point(1179, 11);
             this.groupBoxDevices.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.groupBoxDevices.Name = "groupBoxDevices";
             this.groupBoxDevices.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -369,7 +346,6 @@
             this.panel3.Controls.Add(this.radGoSign);
             this.panel3.Controls.Add(this.radResetSigns);
             this.panel3.Controls.Add(this.radFork);
-            this.panel3.Controls.Add(this.radInPosition);
             this.panel3.Controls.Add(this.radRollerEye);
             this.panel3.Controls.Add(this.radPgmCar);
             this.panel3.Controls.Add(this.radAudio);
@@ -383,6 +359,23 @@
             this.panel3.Size = new System.Drawing.Size(1214, 433);
             this.panel3.TabIndex = 21;
             // 
+            // radBtnExtraRoller
+            // 
+            this.radBtnExtraRoller.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.radBtnExtraRoller.AutoCheck = false;
+            this.radBtnExtraRoller.AutoSize = true;
+            this.radBtnExtraRoller.ForeColor = System.Drawing.Color.White;
+            this.radBtnExtraRoller.Location = new System.Drawing.Point(225, 282);
+            this.radBtnExtraRoller.Margin = new System.Windows.Forms.Padding(4);
+            this.radBtnExtraRoller.Name = "radBtnExtraRoller";
+            this.radBtnExtraRoller.Size = new System.Drawing.Size(170, 29);
+            this.radBtnExtraRoller.TabIndex = 24;
+            this.radBtnExtraRoller.TabStop = true;
+            this.radBtnExtraRoller.Text = "Extra Roller Btn";
+            this.radBtnExtraRoller.UseVisualStyleBackColor = true;
+            // 
             // label2
             // 
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -391,9 +384,9 @@
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.ForeColor = System.Drawing.Color.White;
-            this.label2.Location = new System.Drawing.Point(231, 32);
+            this.label2.Location = new System.Drawing.Point(655, 64);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(95, 26);
+            this.label2.Size = new System.Drawing.Size(137, 37);
             this.label2.TabIndex = 23;
             this.label2.Text = "Outputs";
             // 
@@ -405,114 +398,19 @@
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.ForeColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(40, 27);
+            this.label1.Location = new System.Drawing.Point(220, 60);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(83, 29);
+            this.label1.Size = new System.Drawing.Size(120, 40);
             this.label1.TabIndex = 22;
             this.label1.Text = "Inputs";
             // 
-            // buttonForkSolTest
-            // 
-            this.buttonForkSolTest.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonForkSolTest.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(44)))), ((int)(((byte)(51)))));
-            this.buttonForkSolTest.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-            this.buttonForkSolTest.FlatAppearance.BorderSize = 5;
-            this.buttonForkSolTest.Font = new System.Drawing.Font("Leelawadee UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonForkSolTest.ForeColor = System.Drawing.Color.White;
-            this.buttonForkSolTest.Location = new System.Drawing.Point(30, 45);
-            this.buttonForkSolTest.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.buttonForkSolTest.Name = "buttonForkSolTest";
-            this.buttonForkSolTest.Size = new System.Drawing.Size(191, 71);
-            this.buttonForkSolTest.TabIndex = 22;
-            this.buttonForkSolTest.Text = "Fork Solenoid";
-            this.buttonForkSolTest.UseVisualStyleBackColor = false;
-            this.buttonForkSolTest.Click += new System.EventHandler(this.buttonForkSolTest_Click);
-            // 
-            // buttonAudioTest
-            // 
-            this.buttonAudioTest.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonAudioTest.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(44)))), ((int)(((byte)(51)))));
-            this.buttonAudioTest.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-            this.buttonAudioTest.FlatAppearance.BorderSize = 5;
-            this.buttonAudioTest.Font = new System.Drawing.Font("Leelawadee UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonAudioTest.ForeColor = System.Drawing.Color.White;
-            this.buttonAudioTest.Location = new System.Drawing.Point(30, 137);
-            this.buttonAudioTest.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.buttonAudioTest.Name = "buttonAudioTest";
-            this.buttonAudioTest.Size = new System.Drawing.Size(191, 71);
-            this.buttonAudioTest.TabIndex = 23;
-            this.buttonAudioTest.Text = "Audio";
-            this.buttonAudioTest.UseVisualStyleBackColor = false;
-            this.buttonAudioTest.Click += new System.EventHandler(this.buttonAudioTest_Click);
-            // 
-            // buttonSignFlipTest
-            // 
-            this.buttonSignFlipTest.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonSignFlipTest.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(44)))), ((int)(((byte)(51)))));
-            this.buttonSignFlipTest.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-            this.buttonSignFlipTest.FlatAppearance.BorderSize = 5;
-            this.buttonSignFlipTest.Font = new System.Drawing.Font("Leelawadee UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonSignFlipTest.ForeColor = System.Drawing.Color.White;
-            this.buttonSignFlipTest.Location = new System.Drawing.Point(30, 224);
-            this.buttonSignFlipTest.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.buttonSignFlipTest.Name = "buttonSignFlipTest";
-            this.buttonSignFlipTest.Size = new System.Drawing.Size(191, 71);
-            this.buttonSignFlipTest.TabIndex = 24;
-            this.buttonSignFlipTest.Text = "Signs";
-            this.buttonSignFlipTest.UseVisualStyleBackColor = false;
-            this.buttonSignFlipTest.Click += new System.EventHandler(this.buttonSignFlipTest_Click);
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox1.Controls.Add(this.buttonForkSolTest);
-            this.groupBox1.Controls.Add(this.buttonSignFlipTest);
-            this.groupBox1.Controls.Add(this.buttonAudioTest);
-            this.groupBox1.Font = new System.Drawing.Font("Leelawadee UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox1.ForeColor = System.Drawing.Color.White;
-            this.groupBox1.Location = new System.Drawing.Point(1005, 24);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.groupBox1.Size = new System.Drawing.Size(243, 324);
-            this.groupBox1.TabIndex = 25;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Test Buttons";
-            this.groupBox1.Visible = false;
-            // 
-            // radBtnExtraRoller
-            // 
-            this.radBtnExtraRoller.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.radBtnExtraRoller.AutoCheck = false;
-            this.radBtnExtraRoller.AutoSize = true;
-            this.radBtnExtraRoller.ForeColor = System.Drawing.Color.White;
-            this.radBtnExtraRoller.Location = new System.Drawing.Point(45, 249);
-            this.radBtnExtraRoller.Margin = new System.Windows.Forms.Padding(4);
-            this.radBtnExtraRoller.Name = "radBtnExtraRoller";
-            this.radBtnExtraRoller.Size = new System.Drawing.Size(124, 21);
-            this.radBtnExtraRoller.TabIndex = 24;
-            this.radBtnExtraRoller.TabStop = true;
-            this.radBtnExtraRoller.Text = "Extra Roller Btn";
-            this.radBtnExtraRoller.UseVisualStyleBackColor = true;
-            // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(44)))), ((int)(((byte)(51)))));
             this.ClientSize = new System.Drawing.Size(1500, 795);
             this.ControlBox = false;
-            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.groupBoxDevices);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel1);
@@ -527,7 +425,6 @@
             this.groupBoxDevices.PerformLayout();
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -548,17 +445,12 @@
         private System.Windows.Forms.RadioButton radAudio;
         private System.Windows.Forms.RadioButton radStop;
         private System.Windows.Forms.RadioButton radGoSign;
-        private System.Windows.Forms.RadioButton radInPosition;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.GroupBox groupBoxDevices;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button buttonForkSolTest;
-        private System.Windows.Forms.Button buttonAudioTest;
-        private System.Windows.Forms.Button buttonSignFlipTest;
-        private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.RadioButton radBtnExtraRoller;
     }
 }
