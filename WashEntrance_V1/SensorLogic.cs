@@ -35,9 +35,7 @@ namespace WashEntrance_V1
 
         // Non-device related variables
 
-        private static bool carProgrammed = false;
         private static bool in_position = false;
-        private static bool extraRollerBtn = false;
         private static bool reset = false;
         private static bool carMoving = false;
         private static bool signsChanged = false;
@@ -154,7 +152,7 @@ namespace WashEntrance_V1
             }
         }
 
-        private static bool CarInPosition(SeaMAX SeaDac_DeviceHandler, byte[] input)
+        public static bool CarInPosition(SeaMAX SeaDac_DeviceHandler, byte[] input)
         {
             try
             {
@@ -263,56 +261,58 @@ namespace WashEntrance_V1
             }
         }
 
-        private static bool Reset(SeaMAX SeaDac1_DeviceHandler, SeaMAX SeaDac2_DeviceHandler, byte[] input1, byte[] input2, byte[] output1, byte[] output2)
+        private static int Reset(SeaMAX SeaDac1_DeviceHandler, SeaMAX SeaDac2_DeviceHandler, byte[] input1, byte[] input2, byte[] output1, byte[] output2)
         {
             try
             {
                 int err;
 
-                while (true)
+                err = SeaDac1_DeviceHandler.SM_ReadDigitalInputs(1, 2, input1);
+                LogErrorInput(err, "Reset");
+
+                SD1_input3_resetSigns = GetBit(input1[0], 2);
+
+                lock (lockObj)
                 {
-                    
-                    err = SeaDac1_DeviceHandler.SM_ReadDigitalInputs(1, 2, input1);
-                    LogErrorInput(err, "Reset");
-               
-                    SD1_input3_resetSigns = GetBit(input1[0], 2);
+                    SD1_input2_pgmCarButton = GetBit(input1[0], 1);
 
-                    lock (lockObj)
+                    if (SD1_input2_pgmCarButton == true)
                     {
-                        SD1_input2_pgmCarButton = GetBit(input1[0], 1);
-
-                    }
-
-                    if (SD1_input3_resetSigns == true)
-                    {
-                        Logger.WriteLog($"Reset = {SD1_input3_resetSigns}");
-                        Thread.Sleep(1500);
-                        output2[0] = 0;
-                        err = SeaDac2_DeviceHandler.SM_WriteDigitalOutputs(0, 4, output2);
-                        LogErrorOutput(err, "Reset");
-
-                        in_position = false;
-                        carProgrammed = false;
-                        SD1_input1_pgmCar = false;
                         SD1_input2_pgmCarButton = false;
-                        SD1_input3_resetSigns = false;
-                        SD2_input1_sonar = false;
-                        SD2_input2_tireEye = false;
-                        SD2_input3_rollerEye = false;
-                        reset = false;
-                        carMoving = false;
-                        extraRollerBtn = false;
-
-                        //Logger.WriteLog("Returning from Reset");
-                        return true;
+                        return 1;
                     }
                 }
+
+                if (SD1_input3_resetSigns == true)
+                {
+                    Thread.Sleep(SLEEP_DURATION_MS * 10);
+
+                    output2[0] = 0;
+
+                    err = SeaDac2_DeviceHandler.SM_WriteDigitalOutputs(0, 4, output2);
+                    LogErrorOutput(err, "Reset");
+
+                    in_position = false;
+                    SD1_input1_pgmCar = false;
+                    SD1_input2_pgmCarButton = false;
+                    SD1_input3_resetSigns = false;
+                    SD2_input1_sonar = false;
+                    SD2_input2_tireEye = false;
+                    SD2_input3_rollerEye = false;
+                    reset = false;
+                    carMoving = false;
+
+                    return 0;
+                }
+
             }
             catch (Exception e)
             {
                 Logger.WriteLog($"Reset() - Exception: {e}");
-                return false;
+                return -1;
             }
+
+            return 0; 
         }
 
         private static void LogErrorInput(int err, string function)
@@ -360,12 +360,11 @@ namespace WashEntrance_V1
 
         private static void MonitorExtraRollerBtn(SeaMAX SeaDac_DeviceHandler)
         {
-            int err;
             byte[] input = new byte[1];
 
             while (true)
             {
-                err = SeaDac_DeviceHandler.SM_ReadDigitalInputs(1, 1, input);
+                int err = SeaDac_DeviceHandler.SM_ReadDigitalInputs(1, 1, input);
 
                 lock (lockObj)
                 {
@@ -376,9 +375,6 @@ namespace WashEntrance_V1
             }
         }
 
-        /*
-         Main Function
-        */
         public static void SeaLevelTask()
         {
             // local variables 
@@ -440,12 +436,7 @@ namespace WashEntrance_V1
                         {
                             in_position = true;
                             switch_case = 0;
-
-                            if (signsChanged == false)
-                            {
-                                signsChanged = ChangeSigns(SeaDACLite2_DeviceHandler, SeaDac2_Output);
-                            }
-
+                            Thread.Sleep(SLEEP_DURATION_MS);
                             break; 
                         }
                         else
@@ -455,19 +446,14 @@ namespace WashEntrance_V1
                             lock (lockObj)
                             {
                                 SD1_input2_pgmCarButton = GetBit(SeaDac1_Input[0], 1);
-                            }
 
-                            if (SD1_input2_pgmCarButton == true)
-                            {
-                                in_position = true;
-                                switch_case = 0;
-
-                                if (SD2_output2_signs == false)
+                                if (SD1_input2_pgmCarButton == true)
                                 {
-                                    signsChanged = ChangeSigns(SeaDACLite2_DeviceHandler, SeaDac2_Output);
+                                    in_position = true;
+                                    switch_case = 0;
+                                    SD1_input2_pgmCarButton = false;
+                                    break; 
                                 }
-
-                                break;
                             }
                           
                             Thread.Sleep(SLEEP_DURATION_MS);
@@ -479,9 +465,25 @@ namespace WashEntrance_V1
                     {
                         while (reset == false)
                         {
+                            lock (lockObj)
+                            {
+                                SD1_input2_pgmCarButton = GetBit(SeaDac1_Input[0], 1);
+
+                                if (SD1_input2_pgmCarButton == true)
+                                {
+                                    carMoving = false;
+                                    SD1_input2_pgmCarButton = false;
+                                    switch_case = 0; 
+                                }
+                            }
+
+                            if (SD2_output2_signs == false)
+                            {
+                                signsChanged = ChangeSigns(SeaDACLite2_DeviceHandler, SeaDac2_Output);
+                            }
+
                             switch (switch_case)
                             {
-                                // if the car pulled in and is in proper loading position. 
                                 case 0:
                                     if (carMoving == false)
                                     {
@@ -501,15 +503,18 @@ namespace WashEntrance_V1
 
                                 // case for dealing with reset. 
                                 case 1:
-                                    while (reset == false)
-                                    {
-                                        reset = Reset(SeaDACLite1_DeviceHandler, SeaDACLite2_DeviceHandler, SeaDac1_Input, SeaDac2_Input, SeaDac1_Output, SeaDac2_Output);
+                                    int i = Reset(SeaDACLite1_DeviceHandler, SeaDACLite2_DeviceHandler, SeaDac1_Input, SeaDac2_Input, SeaDac1_Output, SeaDac2_Output);
 
-                                        if (reset == false)
-                                        {
-                                            switch_case = 1;
-                                            break;
-                                        }
+                                    // 1 = extra roller button, 0 == reset, -1 = error
+                                    if (i == 0)
+                                    {
+                                        reset = true;
+                                    }
+                                    else if (i == 1)
+                                    {
+                                        carMoving = false;
+                                        switch_case = 0;
+                                        break;
                                     }
 
                                     break;

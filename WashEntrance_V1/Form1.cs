@@ -38,8 +38,7 @@ namespace WashEntrance_V1
 
         private void tmrUpdateForm_Tick(object sender, EventArgs e)
         {
-            if (SeaLevelThread.in_position) { radInPosition.Checked = true; }
-            else { radInPosition.Checked = false; }
+
 
             // SeaLevel Device 2 inputs
             if (SeaLevelThread.SD2_input1_sonar) { radSonar.Checked = true; }
@@ -59,9 +58,6 @@ namespace WashEntrance_V1
             else { radBtnExtraRoller.Checked = false; }
 
             if (SeaLevelThread.SD1_input3_resetSigns) { radResetSigns.Checked = true; }
-            else { radResetSigns.Checked = false; }
-
-            if (SeaLevelThread.SD1_input4) { radResetSigns.Checked = true; }
             else { radResetSigns.Checked = false; }
 
             //SeaLevel Device 2 outputs

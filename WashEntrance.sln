@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31702.278
+# Visual Studio 15
+VisualStudioVersion = 15.0.33801.198
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WashEntrance", "WashEntrance_V1\WashEntrance.csproj", "{A1AC8176-EF24-44A8-AC2F-664D86ADE291}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{36687F0A-DD40-41F5-8823-DE4CFF32BA4B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WashEntrance_Tests", "WashEntrance_V1\WashEntrance_Tests\WashEntrance_Tests.csproj", "{BAE63E57-7420-4428-9BAD-65AA1EFE0946}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,11 +19,18 @@ Global
 		{A1AC8176-EF24-44A8-AC2F-664D86ADE291}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1AC8176-EF24-44A8-AC2F-664D86ADE291}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1AC8176-EF24-44A8-AC2F-664D86ADE291}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BAE63E57-7420-4428-9BAD-65AA1EFE0946}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BAE63E57-7420-4428-9BAD-65AA1EFE0946}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BAE63E57-7420-4428-9BAD-65AA1EFE0946}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BAE63E57-7420-4428-9BAD-65AA1EFE0946}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{BAE63E57-7420-4428-9BAD-65AA1EFE0946} = {36687F0A-DD40-41F5-8823-DE4CFF32BA4B}
+	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {47F48F72-5ACE-4458-991A-DF21E3307C14}
+		SolutionGuid = {CDD3BA46-D88B-4156-9482-A1CA984E0161}
 	EndGlobalSection
 EndGlobal
