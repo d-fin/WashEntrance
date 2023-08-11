@@ -19,6 +19,8 @@ namespace WashEntrance_V1
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
+            Logger.DeleteOldLines();
+
             Logger.WriteLog("Starting Wash Entrance Controller");
 
             Thread SeaLevelBackground = new Thread(SeaLevelThread.SeaLevelTask);
