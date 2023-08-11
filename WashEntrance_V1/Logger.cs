@@ -30,7 +30,7 @@ namespace WashEntrance_V1
         public static void DeleteOldLines()
         {
             string logPath = ConfigurationManager.AppSettings["logPath"];
-            int keepLines = 1000;
+            int keepLines = 500;
 
             string[] lines = File.ReadAllLines(logPath);
 
