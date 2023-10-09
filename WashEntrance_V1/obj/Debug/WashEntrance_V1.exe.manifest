@@ -67,14 +67,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="WashEntrance_V1.exe" size="182240">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="WashEntrance_V1.exe" size="188384">
       <assemblyIdentity name="WashEntrance_V1" version="2.1.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>2KOp74KK5dT6qiyWr0OGjIHB7FsVa7U8+KVwPQAoSt8=</dsig:DigestValue>
+        <dsig:DigestValue>cqVu4mdEaulH+SZtEtWmG08h4AXoeAQqP4XKKiuEeIw=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -105,13 +105,13 @@
       <dsig:DigestValue>6pXMUQzyVLQqVdAYzwV/nomDtEI1cQ98hyS53tLjr7Q=</dsig:DigestValue>
     </hash>
   </file>
-  <file name="WashEntrance_V1.exe.config" size="281">
+  <file name="WashEntrance_V1.exe.config" size="290">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>Ngb6uFqPSYOtsJ45pE8yHFa1geg9NNgINY4HSPC7NBw=</dsig:DigestValue>
+      <dsig:DigestValue>NzWbsIThXDEIsEuMNQ90th2ZP7g7vWmtHFdhNdd003s=</dsig:DigestValue>
     </hash>
   </file>
 </asmv1:assembly>

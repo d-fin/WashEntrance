@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Threading;
 using Sealevel;
+using System.Security.Cryptography;
 
 namespace WashEntrance_V1
 {
@@ -20,15 +21,34 @@ namespace WashEntrance_V1
             Application.SetCompatibleTextRenderingDefault(false);
 
             Logger.DeleteOldLines();
+            DialogResult result = MessageBox.Show("Select yes to run tests or no to run the application.", 
+                "Test or Run",
+                MessageBoxButtons.YesNoCancel);
 
-            Logger.WriteLog("Starting Wash Entrance Controller");
+            if (result == DialogResult.Yes)
+            {
+                Logger.WriteLog("Starting Test Form");
 
-            Thread SeaLevelBackground = new Thread(SeaLevelThread.SeaLevelTask);
-            SeaLevelBackground.IsBackground = true;
-            SeaLevelBackground.Start();
+                Application.Run(new TestForm());
 
-            Application.Run(new Form1());
-            Logger.WriteLog("Ending Wash Entrance Controller");
+                Logger.WriteLog("Ending Test Form");
+            }
+            else if (result == DialogResult.No)
+            {
+                Logger.WriteLog("Starting Wash Entrance Controller");
+
+                Thread SeaLevelBackground = new Thread(SeaLevelThread.SeaLevelTask);
+                SeaLevelBackground.IsBackground = true;
+                SeaLevelBackground.Start();
+
+                Application.Run(new Form1());
+                Logger.WriteLog("Ending Wash Entrance Controller");
+            }
+            else
+            {
+                Logger.WriteLog("Ending Application");
+            }
+            
         }
     }
 }

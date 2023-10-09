@@ -53,7 +53,6 @@ C:\Users\boban\Source\Repos\WashEntrance\WashEntrance_V1\bin\Debug\WashEntrance_
 C:\Users\boban\Source\Repos\WashEntrance\WashEntrance_V1\bin\Debug\WashEntrance_V1.application
 C:\Users\boban\Source\Repos\WashEntrance\WashEntrance_V1\bin\Debug\WashEntrance_V1.exe
 C:\Users\boban\Source\Repos\WashEntrance\WashEntrance_V1\bin\Debug\WashEntrance_V1.pdb
-C:\Users\boban\Source\Repos\WashEntrance\WashEntrance_V1\bin\Debug\SeaMAX Dot Net.dll
 C:\Users\boban\Source\Repos\WashEntrance\WashEntrance_V1\bin\Debug\System.ValueTuple.dll
 C:\Users\boban\Source\Repos\WashEntrance\WashEntrance_V1\bin\Debug\SeaMAX Dot Net.xml
 C:\Users\boban\Source\Repos\WashEntrance\WashEntrance_V1\bin\Debug\System.ValueTuple.xml
@@ -69,3 +68,5 @@ C:\Users\boban\Source\Repos\WashEntrance\WashEntrance_V1\obj\Debug\WashEntrance_
 C:\Users\boban\Source\Repos\WashEntrance\WashEntrance_V1\obj\Debug\WashEntrance.csproj.CopyComplete
 C:\Users\boban\Source\Repos\WashEntrance\WashEntrance_V1\obj\Debug\WashEntrance_V1.exe
 C:\Users\boban\Source\Repos\WashEntrance\WashEntrance_V1\obj\Debug\WashEntrance_V1.pdb
+C:\Users\boban\source\repos\WashEntrance\WashEntrance_V1\obj\Debug\WashEntrance_V1.TestForm.resources
+C:\Users\boban\source\repos\WashEntrance\WashEntrance_V1\bin\Debug\SeaMAX Dot Net.dll

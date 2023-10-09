@@ -71,7 +71,7 @@ namespace WashEntrance_V1
         /*
             GetBit converts input, a byte array, to booleans
          */
-        private static bool GetBit(this byte b, int bitNumber)
+        public static bool GetBit(this byte b, int bitNumber)
         {
             return (b & (1 << bitNumber)) != 0;
         }
@@ -259,7 +259,7 @@ namespace WashEntrance_V1
                 2. Once fork is lifted, leave up until two rollers are outputted. 
                 3. Lower fork when the roller eye senses third roller, again to prevent jams. 
         */
-        private static bool RollerMonitoring(SeaMAX SeaDac_DeviceHandler, byte[] input, byte[] output)
+        public static bool RollerMonitoring(SeaMAX SeaDac_DeviceHandler, byte[] input, byte[] output)
         {
             int rollerCounter = 0;
             bool success = false;
