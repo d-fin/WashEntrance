@@ -20,34 +20,15 @@ namespace WashEntrance_V1
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
+            if (!Logger.DoesLogPathExist())
+            {
+                string logPath = Logger.PromptForLogFilePath();
+                Logger.UpdateLogPathInConfig(logPath);
+            }
             Logger.DeleteOldLines();
-            DialogResult result = MessageBox.Show("Select yes to run tests or no to run the application.", 
-                "Test or Run",
-                MessageBoxButtons.YesNoCancel);
-
-            if (result == DialogResult.Yes)
-            {
-                Logger.WriteLog("Starting Test Form");
-
-                Application.Run(new TestForm());
-
-                Logger.WriteLog("Ending Test Form");
-            }
-            else if (result == DialogResult.No)
-            {
-                Logger.WriteLog("Starting Wash Entrance Controller");
-
-                Thread SeaLevelBackground = new Thread(SeaLevelThread.SeaLevelTask);
-                SeaLevelBackground.IsBackground = true;
-                SeaLevelBackground.Start();
-
-                Application.Run(new Form1());
-                Logger.WriteLog("Ending Wash Entrance Controller");
-            }
-            else
-            {
-                Logger.WriteLog("Ending Application");
-            }
+            Logger.WriteLog("Starting Wash Entrance Controller");
+            Application.Run(new Form1());
+            Logger.WriteLog("Ending Wash Entrance Controller");
             
         }
     }

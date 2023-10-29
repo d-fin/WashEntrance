@@ -51,6 +51,8 @@ namespace WashEntrance_V1
         private static readonly object lockObj_isConnected = new object();
         private static bool endThreads = false;
         private static bool resetTriggered = false;
+        private static bool exiting = false;
+
 
         private static Dictionary<int, string> readInputErrorCodes = new Dictionary<int, string>
         {
@@ -373,7 +375,6 @@ namespace WashEntrance_V1
                 SD2_output2_signs = false;
                 SD2_output1_audio = false;
                 SD2_output3_forkSolenoid = false;
-                //reset = false;
                 carMoving = false;
                 in_position = false;
                 signsChanged = false;
@@ -390,32 +391,41 @@ namespace WashEntrance_V1
 
         private static void LogErrorInput(int err, string function)
         {
-            if (err < 0)
-            {
-                if (readInputErrorCodes.TryGetValue(err, out string errorMessage))
+            try 
+            { 
+                if (err < 0)
                 {
-                    Logger.WriteLog($"{function}() - SM_ReadDigitalInputs() error code: {err}, error message: {errorMessage}");
-                }
-                else
-                {
-                    Logger.WriteLog($"{function}() - SM_ReadDigitalInputs() error code: {err}");
+                    if (readInputErrorCodes.TryGetValue(err, out string errorMessage))
+                    {
+                        Logger.WriteLog($"{function}() - SM_ReadDigitalInputs() error code: {err}, error message: {errorMessage}");
+                    }
+                    else
+                    {
+                        Logger.WriteLog($"{function}() - SM_ReadDigitalInputs() error code: {err}");
+                    }
                 }
             }
+            catch (Exception) { }
         }
 
         private static void LogErrorOutput(int err, string function)
         {
-            if (err < 0)
+            try
             {
-                if (writeOutputErrorCodes.TryGetValue(err, out string errorMessage))
+                if (err < 0)
                 {
-                    Logger.WriteLog($"{function} - SM_ReadDigitalOutputs() error code: {err}, error message: {errorMessage}");
-                }
-                else
-                {
-                    Logger.WriteLog($"{function} - SM_ReadDigitalOutputs() error code: {err}");
+                    if (writeOutputErrorCodes.TryGetValue(err, out string errorMessage))
+                    {
+                        Logger.WriteLog($"{function} - SM_WriteDigitalOutputs() error code: {err}, error message: {errorMessage}");
+                    }
+                    else
+                    {
+                        Logger.WriteLog($"{function} - SM_WriteDigitalOutputs() error code: {err}");
+                    }
                 }
             }
+            catch (Exception) { }
+            
         }
 
         /*
@@ -494,8 +504,6 @@ namespace WashEntrance_V1
 
             while (endThreads == false)
             {
-                //bool reset = false;
-
                 int err = SeaDac_DeviceHandler.SM_ReadDigitalInputs(0, 4, input);
                 LogErrorInput(err, "MonitorReset");
 
@@ -539,25 +547,71 @@ namespace WashEntrance_V1
             }
         }
 
-        private static void ExitThreads(SeaMAX SeaDacLite1_DeviceHandler, SeaMAX SeaDacLite2_DeviceHandler)
+        private static void ExitThreads(SeaMAX SeaDacLite1_DeviceHandler, SeaMAX SeaDacLite2_DeviceHandler, Thread extraRollerButton, Thread resetMonitor)
         {
             byte[] output = new byte[1];
             int err;
-
-            endThreads = true; 
             output[0] = 0;
-
-            err = SeaDacLite2_DeviceHandler.SM_WriteDigitalOutputs(0, 4, output);
-            LogErrorOutput(err, "SeaLevelThread");
             
-            err = SeaDacLite1_DeviceHandler.SM_WriteDigitalOutputs(0, 4, output);
-            LogErrorOutput(err, "SeaLevelThread");
+            byte[] input1 = new byte[1];
+            byte[] input2 = new byte[1];
+            byte[] output1 = new byte[1];
+            byte[] output2 = new byte[1];
+            try
+            {
+                bool reset = Reset(SeaDacLite1_DeviceHandler, SeaDacLite2_DeviceHandler, input1, input2, output1, output2);
+                endThreads = true;
+                exiting = true;
+                err = SeaDacLite2_DeviceHandler.SM_WriteDigitalOutputs(0, 4, output);
+                LogErrorOutput(err, "SeaLevelThread");
+            
+                err = SeaDacLite1_DeviceHandler.SM_WriteDigitalOutputs(0, 4, output);
+                LogErrorOutput(err, "SeaLevelThread");
 
-            SeaDacLite1_DeviceHandler.SM_Close();
-            SeaDacLite2_DeviceHandler.SM_Close();
+                err = SeaDacLite1_DeviceHandler.SM_Close();
+                if (err == 0)
+                {
+                    Logger.WriteLog($"SeaDAC Lite 1 Closed succesfully.");
+                    seaDAC1 = false; 
+                }
+                else 
+                {
+                    Logger.WriteLog($"Error closing SeaDAC Lite 1");
+                }
+            
+                err = SeaDacLite2_DeviceHandler.SM_Close();
+                if (err == 0)
+                {
+                    Logger.WriteLog($"SeaDAC Lite 2 Closed succesfully.");
+                    seaDAC2 = false; 
+                }
+                else 
+                {
+                    Logger.WriteLog($"Error closing SeaDAC Lite 2");
+                }
 
-            Thread.Sleep(50);
-            Application.ExitThread();
+                Logger.WriteLog("Attempting to end extra roller and reset threads....");
+                bool threadsJoined = false; 
+                while (threadsJoined == false)
+                {
+                    if (extraRollerButton.ThreadState == ThreadState.Stopped && resetMonitor.ThreadState == ThreadState.Stopped)
+                    {
+                        Logger.LogThreadTermination(resetMonitor);
+                        Logger.LogThreadTermination(extraRollerButton);
+                        bool x = extraRollerButton.Join(500);
+                        bool y = resetMonitor.Join(500);
+                        if (x == true && y == true)
+                        {
+                            threadsJoined = true;
+                            Logger.WriteLog("extra roller and reset threads joined.");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.WriteLog($"Exit Threads Exception - {ex}");
+            }
         }
 
         /*
@@ -577,6 +631,8 @@ namespace WashEntrance_V1
 
             int switch_case = -1;
             int err;
+            exiting = false; 
+            endThreads = false;
 
             while (true)
             {
@@ -594,9 +650,12 @@ namespace WashEntrance_V1
             */
             Thread extraRollerButton = new Thread(() => MonitorExtraRollerBtn(SeaDACLite1_DeviceHandler));
             Thread resetMonitor = new Thread(() => MonitorReset(SeaDACLite1_DeviceHandler));
-
             extraRollerButton.Start();
             resetMonitor.Start();
+            extraRollerButton.Name = "ExtraRollerBtnThread";
+            resetMonitor.Name = "MonitorResetThread";
+            Logger.LogThreadCreation(extraRollerButton);
+            Logger.LogThreadCreation(resetMonitor);
 
             try
             {
@@ -607,15 +666,15 @@ namespace WashEntrance_V1
                 err = SeaDACLite1_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaDac1_Output);
                 LogErrorOutput(err, "SeaLevelThread");
 
-                while (true)
+                while (exiting == false)
                 {
                     switch_case = -1;
                     reset = false;
                     resetTriggered = false;
 
-                    if (Form1.Shutdown == true)
+                    if (Form1.Shutdown == true || Form1.testing == true)
                     {
-                        ExitThreads(SeaDACLite1_DeviceHandler, SeaDACLite2_DeviceHandler);
+                        ExitThreads(SeaDACLite1_DeviceHandler, SeaDACLite2_DeviceHandler, extraRollerButton, resetMonitor);
                     }
 
                     if (!seaDAC1 || !seaDAC2)
@@ -632,7 +691,7 @@ namespace WashEntrance_V1
                     }
 
                     // check to see if a car is in the proper loading position. 
-                    while (true)
+                    while (exiting == false)
                     {
                         bool pgmCar = false;
                         bool manualPgm = false;
@@ -651,9 +710,9 @@ namespace WashEntrance_V1
                             }
                         }
 
-                        if (Form1.Shutdown == true)
+                        if (Form1.Shutdown == true || Form1.testing == true || Form1.resetButton == true)
                         {
-                            ExitThreads(SeaDACLite1_DeviceHandler, SeaDACLite2_DeviceHandler);
+                            ExitThreads(SeaDACLite1_DeviceHandler, SeaDACLite2_DeviceHandler, extraRollerButton, resetMonitor);
                         }
 
                         if (pgmCar == true)
@@ -663,7 +722,6 @@ namespace WashEntrance_V1
                                 SeaDac1_Output[0] = 1;
                                 err = SeaDACLite1_DeviceHandler.SM_WriteDigitalOutputs(3, 1, SeaDac1_Output);
                                 LogErrorOutput(err, "SeaLevelThread");
-
 
                                 lock (lockObj_extraRollerBtn)
                                 {
@@ -687,9 +745,9 @@ namespace WashEntrance_V1
                                     Thread.Sleep(SLEEP_DURATION_MS * 2);
                                     break;
                                 }
-                                else if (Form1.Shutdown == true)
+                                else if (Form1.Shutdown == true || Form1.testing == true || Form1.resetButton == true)
                                 {
-                                    ExitThreads(SeaDACLite1_DeviceHandler, SeaDACLite2_DeviceHandler);
+                                    break;
                                 }
                             }
 
@@ -718,9 +776,9 @@ namespace WashEntrance_V1
                                 Thread.Sleep(SLEEP_DURATION_MS * 20);
                             }
 
-                            if (Form1.Shutdown == true)
+                            if (Form1.Shutdown == true || Form1.resetButton == true)
                             {
-                                ExitThreads(SeaDACLite1_DeviceHandler, SeaDACLite2_DeviceHandler);
+                                break;
                             }
 
                             switch (switch_case)
@@ -769,10 +827,8 @@ namespace WashEntrance_V1
                             }
                         }
                     }
-
                     Thread.Sleep(SLEEP_DURATION_MS * 50);
                 }
-
             }
             catch (Exception ex)
             {

@@ -121,33 +121,6 @@
     <value>17, 17</value>
   </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="btnExit.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAAEsAAABLCAYAAAA4TnrqAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAW
-        JQAAFiUBSVIk8AAABNBJREFUeF7tnEsodV8UwL2VN3kWUZTXX95SiphSCiWvZCClmEgJE8lISTLxyDsm
-        DDwzMGGIYqAwUp5FDISQWv/W7ezPPr517r37Otd33HNW/UZ37XP2+t179z6vfZwS/8sBA+swZAlgyBLA
-        kCWARVm7u7swPDwMY2NjmmR0dBTGx8fh8fGR7L+amJU1PT0Nrq6u4OTkpHm8vLzIGtREUdbDwwOkpqaS
-        HdMqDQ0NZC1qoSjr/PwcwsLCyE5plaqqKrIWtVCUdXl5CZGRkWSntEpdXR1Zi1qoLisoKAhmZmZgY2MD
-        VldXYWFhAebn51VlaWkJ+vv7wdvbW7bvXycL8fDwgNbWVlhbWwN7xfHxsemL4ff7K2Xx5Obmwvr6ulSi
-        erG3twf+/v6yff16WTyzs7NwcXEhlfu92N/fh4CAANn2HUoW4uvrCy0tLXByciKVbVvoQhYjMDAQiouL
-        4eXlRSpfLHQli1FYWCiVLxa6lOXp6SmVLxa6lOXj4yOVLxa6lIUDvi1hyBIIQ5ZAGLIEwhZZW1tbpjxn
-        Z2dYXl4mc8yhG1k7OzuyXARPw6hcJXQjq6OjQ5bLwKsjVD6FbmQdHByYLj3z+YzJyUmyzVd0NWbhJSM+
-        nwc/o9rw6EoWMjU1JWvDY2kM050sBMcpvh3PxMQE2QZxKFm1tbVkLRTmhCn9whxKVmNjI1mLEisrK7L2
-        PJQwh5KVnp4OAwMD0NXVBd3d3WbBnJGREaioqJBtg+frLOlQsuwBemBODFkWKC8v/+PEkGUB/LsyJ4Ys
-        M8THx8ucOJSssrIyODs7g8PDQ4scHR2ZaqypqZFtg5GQkABXV1cyJw4lq76+nqxFierqall7RkFBAXx8
-        fPyVr6qs8PBw6OzshJ6eHoiNjSVzvqKmLGuP4JG2tjZZW0ZSUhIpClFNFt5K397elkoBeH5+hpiYGDKX
-        51/IUhKVmJgINzc3ZBtENVlZWVlSGZ9h7oCP8dOycFzj2zDy8/MVf1EM1WSlpaVJZXwGjiFULs9Pympv
-        b5flM3AwtyQKsass7DyVy/NTsubm5mS5DGrWU0I3snp7e2W5iNKsp4RuZN3e3kJUVNSf3OTkZCFRiG5k
-        IdfX1zA4OGi6Wvr09ETmmENXsr6LIUsAQ5YAdpWlteOs76KarMzMTKmMzygtLSVzeXQpKzg42LSEhQ88
-        16JyeXQpC8EVZH19faZlbaGhoWTOV3QryxYMWQIYsgSw9QFch1+OQoETgy2By1pCQkJk23J4WS4uLpCT
-        k2NaNWsteOcZZ9qvS5IdXpaaiDwYYguKsvBnHhERQXZKq1RWVpK1qIWiLLzhkJeXR3ZKqwwNDZG1qIWi
-        LASXuRUVFYGbmxvZObVISUkx3Tr7DiUlJWQNamJWFmNzcxOamprs8o4HnP5xH29vb/D+/i7M6+vrX/21
-        F1bJYuC5H3Ut+zv4+fmR+9IiQrJ4FhcXITo6mhQgAh7BU9vXIjbLYuAtJpyyKRHWoCtZDDxXU3rQwhy6
-        lMXT3Nwsu+1kDt3LQnCWwuOe7OxsUhLD3d2dbK9F7CaLge+1whVZGRkZpKy4uDiynRaxuywePC7CB1rx
-        NQUoCl+Pcnd3R+ZqkR+VxTg9PTX9Re/v78nPtco/kfVbMWQJYMgSwJBlNTnwPwy3SbU+OeQVAAAAAElF
-        TkSuQmCC
-</value>
-  </data>
   <data name="panel2.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAPoAAAD6CAYAAACI7Fo9AAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAW
@@ -525,4 +498,7 @@
         0QAAAABJRU5ErkJggg==
 </value>
   </data>
+  <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>25</value>
+  </metadata>
 </root>

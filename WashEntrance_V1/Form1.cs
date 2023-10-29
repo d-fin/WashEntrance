@@ -1,22 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Sealevel;
-using IWshRuntimeLibrary;
 using System.IO;
+
 
 namespace WashEntrance_V1
 {
     public partial class Form1 : Form
     {
         public static bool Shutdown = false;
+        public static bool testing = false;
+        public static bool resetButton = false;
+
+        SeaMAX seaLevelDevice1 = new SeaMAX();
+        SeaMAX seaLevelDevice2 = new SeaMAX();
+        byte[] input = new byte[1];
+        byte[] output = new byte[1];
+
+        bool extraRollerBtn = false;
+        bool goSign = true;
+        bool stopSign = false;
+        bool forkSolenoid = false;
+        bool audio = false;
+
+        private Thread SeaLevelBackground;
+        private int password = 5680;
+
         public Form1()
         {
             InitializeComponent();
@@ -24,22 +37,19 @@ namespace WashEntrance_V1
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            string shortcutPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            string shortcutName = "Wash Entrance Controller.lnk";
-            string targetPath = Application.ExecutablePath;
-            string iconPath = "C:/Users/dfinl/OneDrive/Desktop/WashEntrance_V1/WashEntrance_V1/Logo.ico";
+            extraRollerTestBtn.Visible = false; 
+            forkTestBtn.Visible = false;
+            AudioTestBtn.Visible= false;
+            changeSignsTestBtn.Visible= false;
+            logTxtBox.Visible = false;
 
-            WshShell shell = new WshShell();
-            IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(Path.Combine(shortcutPath, shortcutName));
-            shortcut.TargetPath = targetPath;
-            shortcut.IconLocation = iconPath; 
-            shortcut.Save();
+            testBtn.Enabled = false; 
+
+            runBtn.PerformClick();
         }
 
         private void tmrUpdateForm_Tick(object sender, EventArgs e)
         {
-
-
             // SeaLevel Device 2 inputs
             if (SeaLevelThread.SD2_input1_sonar) { radSonar.Checked = true; }
             else { radSonar.Checked = false; }
@@ -103,9 +113,30 @@ namespace WashEntrance_V1
 
         private void btnExit_Click(object sender, EventArgs e)
         {
-            Shutdown = true;
-            Thread.Sleep(1000);
-            Application.Exit();
+            DialogResult exit = MessageBox.Show("Exiting will terminate the Wash Entrance Controller application, are you sure?",
+                                                                    "WARNING",
+                                                                    MessageBoxButtons.YesNo);
+            if (exit == DialogResult.Yes)
+            {
+                Shutdown = true;
+
+                while (true)
+                {
+                    Logger.LogThreadTermination(SeaLevelBackground);
+                    bool joined = SeaLevelBackground.Join(2000);
+
+                    if (joined == true)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        Thread.Sleep(1000);
+                    }
+                }
+
+                Application.Exit();
+            }
         }
 
         private void deleteLogs_Click(object sender, EventArgs e)
@@ -113,67 +144,362 @@ namespace WashEntrance_V1
             Logger.DeleteOldLines();
         }
 
-        private void buttonForkSolTest_Click(object sender, EventArgs e)
+        private void btnExit_MouseLeave(object sender, EventArgs e)
         {
-            SeaMAX SeaLevelDevice = new SeaMAX();
-            byte[] output = new byte[1];
+            btnExit.BackColor = Color.FromArgb(24, 30, 54);
+        }
 
-            output[0] = 1;
-            int err = SeaLevelDevice.SM_WriteDigitalOutputs(2, 1, output);
+        private void resetBtn_MouseLeave(object sender, EventArgs e)
+        {
+            resetBtn.BackColor = Color.FromArgb(24, 30, 54);
+        }
 
-            if (err < 0)
+        private void runBtn_Click(object sender, EventArgs e)
+        {
+            Logger.WriteLog("Running....");
+            testBtn.BackColor = Color.FromArgb(24, 30, 54);
+            runBtn.BackColor = Color.FromArgb(46, 51, 73);
+            extraRollerTestBtn.Visible = false;
+            forkTestBtn.Visible = false;
+            AudioTestBtn.Visible = false;
+            changeSignsTestBtn.Visible = false;
+            resetButton = false; 
+
+            if (SeaLevelBackground == null || !SeaLevelBackground.IsAlive)
             {
-                Logger.WriteLog($"Error # {err} - Test Button Fork Solenoid");
-            }
-            else
-            {
-                Logger.WriteLog($"Success - Test Button Fork Solenoid");
-                Thread.Sleep(10000);
-                output[0] = 0;
-                err = SeaLevelDevice.SM_WriteDigitalOutputs(2, 1, output);
+                try
+                {
+                    SeaLevelBackground = new Thread(SeaLevelThread.SeaLevelTask);
+                    SeaLevelBackground.Start();
+                    SeaLevelBackground.Name = "SeaLevelBackgroundThread";
+                    Logger.LogThreadCreation(SeaLevelBackground);
+                }
+                catch (Exception ex) 
+                {
+                    Logger.WriteLog($"Error creating SeaLevelBackground Thread - {ex}");
+                }
             }
         }
 
-        private void buttonAudioTest_Click(object sender, EventArgs e)
+        private void testBtn_Click(object sender, EventArgs e)
         {
-            SeaMAX SeaLevelDevice = new SeaMAX();
-            byte[] output = new byte[1];
+            Logger.WriteLog("Testing Mode....");
+            runBtn.BackColor = Color.FromArgb(24, 30, 54);
+            testBtn.BackColor = Color.FromArgb(46, 51, 73);
+            extraRollerTestBtn.Visible = true;
+            forkTestBtn.Visible = true;
+            AudioTestBtn.Visible = true;
+            changeSignsTestBtn.Visible = true;
 
-            output[0] = 1;
-            int err = SeaLevelDevice.SM_WriteDigitalOutputs(0, 1, output);
+            testing = true;
 
-            if (err < 0)
+            int err = seaLevelDevice1.SM_Open("SeaDAC Lite 0");
+            err = seaLevelDevice2.SM_Open("SeaDAC Lite 0");
+
+            output[0] = 0;
+            err = seaLevelDevice1.SM_WriteDigitalOutputs(0, 4, output);
+            Logger.WriteLog($"SD1 WriteDigitalOutputs() - {err}");
+            err = seaLevelDevice2.SM_WriteDigitalOutputs(0, 4, output); 
+            Logger.WriteLog($"SD2 WriteDigitalOutputs() - {err}"); 
+        }
+
+        private void forkTestBtn_Click(object sender, EventArgs e)
+        {
+            try
             {
-                Logger.WriteLog($"Error # {err} - Test Button Audio");
+                output[0] = 1;
+                int err = seaLevelDevice2.SM_WriteDigitalOutputs(2, 1, output);
+                if (err >= 0)
+                {
+                    forkSolenoid = true;
+                    Logger.WriteLog("Fork Up");
+                }
+                else
+                {
+                    Logger.WriteLog($"Error - {err}");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                Logger.WriteLog($"Success - Test Button Audio");
-                Thread.Sleep(10000);
-                output[0] = 0;
-                err = SeaLevelDevice.SM_WriteDigitalOutputs(0, 1, output);
+                DialogResult result = MessageBox.Show($"Exception : {ex}",
+                "Error",
+                MessageBoxButtons.OK);
             }
         }
 
-        private void buttonSignFlipTest_Click(object sender, EventArgs e)
+        private void changeSignsTestBtn_Click(object sender, EventArgs e)
         {
-            SeaMAX SeaLevelDevice = new SeaMAX();
-            byte[] output = new byte[1];
-
-            output[0] = 1;
-            int err = SeaLevelDevice.SM_WriteDigitalOutputs(1, 1, output);
-
-            if (err < 0)
+            try
             {
-                Logger.WriteLog($"Error # {err} - Test Button Signs");
+                output[0] = 1;
+                int err = seaLevelDevice2.SM_WriteDigitalOutputs(1, 1, output);
+                if (err >= 0)
+                {
+                    stopSign = true;
+                    goSign = false; 
+                    Logger.WriteLog("Signs Flipped.");
+                }
+                else 
+                {
+                    Logger.WriteLog($"Error - {err}");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                Logger.WriteLog($"Success - Test Button Signs");
-                Thread.Sleep(10000);
-                output[0] = 0;
-                err = SeaLevelDevice.SM_WriteDigitalOutputs(1, 1, output);
+               DialogResult result = MessageBox.Show($"Exception : {ex}",
+               "Error",
+               MessageBoxButtons.OK);
             }
+        }
+
+        private void AudioTestBtn_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                output[0] = 1;
+                int err = seaLevelDevice2.SM_WriteDigitalOutputs(0, 1, output);
+                if (err >= 0)
+                {
+                    audio = true;
+                    Logger.WriteLog("Audio Played");
+                }
+                else 
+                {
+                    Logger.WriteLog($"Error - {err}");
+                }
+            }
+            catch (Exception ex)
+            {
+               DialogResult result = MessageBox.Show($"Exception : {ex}",
+               "Error",
+               MessageBoxButtons.OK);
+            }
+        }
+
+        private void extraRollerTestBtn_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                int rollerCounter = 0;
+                bool success = false;
+                output[0] = 1;
+                int err;
+
+
+                while (!success)
+                {
+                    while (true)
+                    {
+                        err = seaLevelDevice2.SM_ReadDigitalInputs(0, 4, input);
+
+                        bool one = SeaLevelThread.GetBit(input[0], 0);
+                        bool two = SeaLevelThread.GetBit(input[0], 1);
+                        bool three = SeaLevelThread.GetBit(input[0], 2);
+                        bool four = SeaLevelThread.GetBit(input[0], 3);
+
+                        if (three == true)
+                        {
+                            err = seaLevelDevice2.SM_WriteDigitalOutputs(2, 1, output);
+                            if (err < 0)
+                            {
+
+                            }
+                            else
+                            {
+                                forkSolenoid = SeaLevelThread.GetBit(output[0], 2);
+                                success = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+
+                while (true)
+                {
+                    err = seaLevelDevice2.SM_ReadDigitalInputs(0, 4, input);
+
+                    bool one = SeaLevelThread.GetBit(input[0], 0);
+                    bool two = SeaLevelThread.GetBit(input[0], 1);
+                    bool three = SeaLevelThread.GetBit(input[0], 2);
+                    bool four = SeaLevelThread.GetBit(input[0], 3);
+
+                    if (three == true)
+                    {
+                        three = false;
+                        rollerCounter++;
+                        Thread.Sleep(100 * 13);
+                        if (rollerCounter == 2)
+                        {
+                            while (true)
+                            {
+                                err = seaLevelDevice2.SM_ReadDigitalInputs(0, 4, input);
+
+                                three = SeaLevelThread.GetBit(input[0], 2);
+
+                                if (three == true)
+                                {
+                                    output[0] = 0;
+                                    err = seaLevelDevice2.SM_WriteDigitalOutputs(2, 1, output);
+
+                                    if (err >= 0)
+                                    {
+                                        forkSolenoid = false;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+               DialogResult result = MessageBox.Show($"Exception : {ex}",
+               "Error",
+               MessageBoxButtons.OK);
+            }
+        }
+
+        private void runBtn_Leave(object sender, EventArgs e)
+        {
+            runBtn.BackColor = Color.FromArgb(24, 30, 54); 
+            Logger.WriteLog("Exiting run....");
+        }
+
+        private void testBtn_Leave(object sender, EventArgs e)
+        {
+            runBtn.BackColor = Color.FromArgb(24, 30, 54);
+            Logger.WriteLog("Exiting test....");
+        }
+
+        private void resetBtn_MouseHover(object sender, EventArgs e)
+        {
+            resetBtn.BackColor = Color.FromArgb(46, 51, 73);
+        }
+
+        private void resetBtn_Click(object sender, EventArgs e)
+        {
+            if (SeaLevelBackground != null && SeaLevelBackground.IsAlive)
+            {
+                resetButton = true;
+                Logger.WriteLog("Ending SeaLevelBackground Thread....");
+                int timeout = 0;
+                bool joined = false; 
+
+                while (joined == false)
+                {
+                    if (SeaLevelBackground.ThreadState == ThreadState.Stopped)
+                    {
+                        Logger.LogThreadTermination(SeaLevelBackground);
+                        joined = SeaLevelBackground.Join(500);
+                    }
+
+                    if (joined)
+                    {
+                        Logger.WriteLog("SeaLevelBackground Thread ended....");
+                        break;
+                    }
+                    else if (timeout == 20)
+                    {
+                        MessageBox.Show("Error Resetting, The application will close - please restart.",
+                                                                    "Reset Error",
+                                                                    MessageBoxButtons.OK);
+                        Thread.Sleep(5000);
+                        btnExit.PerformClick();
+                    }
+                    else
+                    {
+                        Logger.WriteLog("SeaLevelBackGround Thread ending failed....");
+                        timeout++;
+                        Thread.Sleep(500);
+                    }
+                }
+            }
+            Logger.WriteLog("Resetting....");
+            runBtn.PerformClick();
+        }
+
+        private void btnExit_MouseHover(object sender, EventArgs e)
+        {
+            btnExit.BackColor = Color.FromArgb(46, 51, 73);
+        }
+
+        private void logBtn_Click(object sender, EventArgs e)
+        {
+            radAudio.Visible = false; 
+            radBtnExtraRoller.Visible = false;
+            radFork.Visible = false;
+            radGoSign.Visible = false;
+            radPgmCar.Visible = false;
+            radResetSigns.Visible = false;
+            radRollerEye.Visible = false;
+            radStop.Visible = false; 
+            radSonar.Visible = false;
+            radTireEye.Visible = false;
+            inputsLabel.Visible = false;
+            outputsLabel.Visible = false;
+            logTxtBox.Visible = true;
+
+            string logPath = Logger.GetLogFilePathFromConfig();
+
+            try
+            {
+                string[] lines = ReadFileLines(logPath);
+                Array.Reverse(lines);
+                logTxtBox.Lines = lines;
+                logTxtBox.Height = 750;
+            }
+            catch (FileNotFoundException)
+            {
+                DialogResult result = MessageBox.Show($"The file could not be found",
+                                                        "File Not Found",
+                                                        MessageBoxButtons.OK);
+            }
+            catch (Exception ex)
+            {
+                DialogResult result = MessageBox.Show($"Exception : {ex}",
+                                                        "Error",
+                                                        MessageBoxButtons.OK);
+            }
+        }
+
+        static string[] ReadFileLines(string filePath)
+        {
+            List<string> lines = new List<string>();
+
+            lock (Logger.lock_File)
+            {
+                using (StreamReader reader = new StreamReader(filePath))
+                {
+                    string line;
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        lines.Add(line);
+                    }
+                }
+            }
+
+            return lines.ToArray();
+        }
+
+        private void logBtn_Leave(object sender, EventArgs e)
+        {
+            radAudio.Visible = true;
+            radBtnExtraRoller.Visible = true;
+            radFork.Visible = true;
+            radGoSign.Visible = true;
+            radPgmCar.Visible = true;
+            radResetSigns.Visible = true;
+            radRollerEye.Visible = true;
+            radStop.Visible = true;
+            radSonar.Visible = true;
+            radTireEye.Visible = true;
+            inputsLabel.Visible = true;
+            outputsLabel.Visible = true;
+
+            logTxtBox.Text = string.Empty;
+            logTxtBox.Visible = false;
         }
     }
 }
