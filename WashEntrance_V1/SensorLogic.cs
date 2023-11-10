@@ -650,10 +650,13 @@ namespace WashEntrance_V1
             */
             Thread extraRollerButton = new Thread(() => MonitorExtraRollerBtn(SeaDACLite1_DeviceHandler));
             Thread resetMonitor = new Thread(() => MonitorReset(SeaDACLite1_DeviceHandler));
+            
             extraRollerButton.Start();
             resetMonitor.Start();
+            
             extraRollerButton.Name = "ExtraRollerBtnThread";
             resetMonitor.Name = "MonitorResetThread";
+            
             Logger.LogThreadCreation(extraRollerButton);
             Logger.LogThreadCreation(resetMonitor);
 
@@ -693,18 +696,18 @@ namespace WashEntrance_V1
                     // check to see if a car is in the proper loading position. 
                     while (exiting == false)
                     {
-                        bool pgmCar = false;
+                        bool reqCar = false;
                         bool manualPgm = false;
 
                         err = SeaDACLite2_DeviceHandler.SM_ReadDigitalInputs(0, 2, SeaDac2_Input);
                         LogErrorOutput(err, "SeaLevelThread");
-                        pgmCar = GetBit(SeaDac2_Input[0], 1);
+                        reqCar = GetBit(SeaDac2_Input[0], 1);
 
                         lock (lockObj_extraRollerBtn)
                         {
                             if (SD1_input2_pgmCarButton == true)
                             {
-                                pgmCar = true;
+                                reqCar = true;
                                 manualPgm = true;
                                 SD1_input2_pgmCarButton = false;
                             }
@@ -715,7 +718,8 @@ namespace WashEntrance_V1
                             ExitThreads(SeaDACLite1_DeviceHandler, SeaDACLite2_DeviceHandler, extraRollerButton, resetMonitor);
                         }
 
-                        if (pgmCar == true)
+                        // here is where im going to want to add the isService var to make sure there is an actual service. 
+                        if (reqCar == true)
                         {
                             while (true)
                             {

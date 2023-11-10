@@ -400,7 +400,7 @@ namespace WashEntrance_V1
                         Logger.WriteLog("SeaLevelBackground Thread ended....");
                         break;
                     }
-                    else if (timeout == 20)
+                    else if (timeout == 100)
                     {
                         MessageBox.Show("Error Resetting, The application will close - please restart.",
                                                                     "Reset Error",
