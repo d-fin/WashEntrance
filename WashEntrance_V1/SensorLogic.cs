@@ -24,16 +24,19 @@ namespace WashEntrance_V1
         public static bool SD2_input2_tireEye = false;  // tire eye - 24VDC 
         public static bool SD2_input3_rollerEye = false;  // roller eye - 24VDC 
 
-        public static bool SD1_input1_pgmCar = false;  // program car - 24 VAC
+        public static bool SD1_input1_pgmCar = false;  // program car - 24 VAC NO LONGER BEING USED
+        public static bool SD1_input1_pgmCarTW = false; 
         public static bool SD1_input2_pgmCarButton = false; // extra roller button inside store - 24VAC
         public static bool SD1_input3_resetSigns = false; // reset flag / hold - 24VAC
+        public static bool SD1_input4_is_Service = false; // only program a car if SW is sending a service to TW 
+
 
         // outputs are Form C Relays, voltage output is 10-24 VDC from common, except fork solenoid is 120VAC
         public static bool SD2_output1_audio = false; // audio
         public static bool SD2_output2_signs = false; // stop sign & go sign (N/O = closed, N/C = go)
         public static bool SD2_output3_forkSolenoid = false; // fork solenoid
 
-        public static bool SD1_output1_requestCar = false; // 24VDC
+        public static bool SD1_output4_requestCar = false; // 24VDC
 
         // Non-device related variables
         private static bool in_position = false;
@@ -369,6 +372,7 @@ namespace WashEntrance_V1
                 SD1_input1_pgmCar = false;
                 SD1_input2_pgmCarButton = false;
                 SD1_input3_resetSigns = false;
+                SD1_input4_is_Service = false; 
                 SD2_input1_sonar = false;
                 SD2_input2_tireEye = false;
                 SD2_input3_rollerEye = false;
@@ -428,6 +432,11 @@ namespace WashEntrance_V1
             
         }
 
+        private static void Log(string message)
+        {
+            Logger.WriteLog(message);
+        }
+
         /*
             Changes the "Please Pull Forward" sign to "Stop Car in Neutral". 
             Also plays Audio. 
@@ -485,6 +494,13 @@ namespace WashEntrance_V1
                 LogErrorInput(err, "MonitorExtraRollerBtn");
                 lock (lockObj_extraRollerBtn)
                 {
+                    SD1_input1_pgmCarTW = GetBit(input[0], 0);
+                    if (SD1_input1_pgmCarTW == true)
+                    {
+                        SD1_input2_pgmCarButton = true;
+                        Log("Extra Roller from TW");
+                    }
+
                     SD1_input2_pgmCarButton = GetBit(input[0], 1);
                 }
 
@@ -721,28 +737,47 @@ namespace WashEntrance_V1
                         // here is where im going to want to add the isService var to make sure there is an actual service. 
                         if (reqCar == true)
                         {
+                            Log("Service has been requested from SiteWatch");
+
                             while (true)
                             {
+                                // below is where I write out to reqCar and this is where I want to add the is_Service check 
+                                // I only want to program a car if there is an actual service so I need to monitor if there is a service 
+                                // being sent to tunnelwatch from sitewatch.
                                 SeaDac1_Output[0] = 1;
                                 err = SeaDACLite1_DeviceHandler.SM_WriteDigitalOutputs(3, 1, SeaDac1_Output);
                                 LogErrorOutput(err, "SeaLevelThread");
 
+                                if (SD1_input4_is_Service == false)
+                                {
+                                    err = SeaDACLite1_DeviceHandler.SM_ReadDigitalInputs(3, 1, SeaDac1_Input);
+                                    LogErrorInput(err, "SeaLevelThread");
+                                    SD1_input4_is_Service = GetBit(SeaDac1_Input[0], 3);
+
+                                    if (SD1_input4_is_Service == true)
+                                    {
+                                        Log("Service in TW");
+                                    }
+                                }
+                                
                                 lock (lockObj_extraRollerBtn)
                                 {
                                     if (SD1_input2_pgmCarButton == true)
                                     {
                                         manualPgm = true;
+                                        Log("Extra Roller Sent");
                                     }
                                 }
 
-                                if (CarInPosition(SeaDACLite2_DeviceHandler, SeaDac2_Input) == true)
+                                if (CarInPosition(SeaDACLite2_DeviceHandler, SeaDac2_Input) == true && SD1_input4_is_Service == true)
                                 {
+                                    Log("Car is in position");
                                     in_position = true;
                                     switch_case = 0;
                                     Thread.Sleep(SLEEP_DURATION_MS * 2);
                                     break;
                                 }
-                                else if (manualPgm == true)
+                                else if (manualPgm == true && SD1_input4_is_Service == true)
                                 {
                                     in_position = true;
                                     switch_case = 0;
@@ -812,6 +847,10 @@ namespace WashEntrance_V1
                                     if (resetTriggered == true)
                                     {
                                         reset = Reset(SeaDACLite1_DeviceHandler, SeaDACLite2_DeviceHandler, SeaDac1_Input, SeaDac2_Input, SeaDac1_Output, SeaDac2_Output);
+                                        if (reset == true)
+                                        {
+                                            Log("Reset = true");
+                                        }
                                     }
 
                                     lock (lockObj_extraRollerBtn)
