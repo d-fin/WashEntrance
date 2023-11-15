@@ -372,7 +372,7 @@ namespace WashEntrance_V1
                 SD1_input1_pgmCar = false;
                 SD1_input2_pgmCarButton = false;
                 SD1_input3_resetSigns = false;
-                SD1_input4_is_Service = false; 
+                //SD1_input4_is_Service = false; 
                 SD2_input1_sonar = false;
                 SD2_input2_tireEye = false;
                 SD2_input3_rollerEye = false;
@@ -737,7 +737,7 @@ namespace WashEntrance_V1
                         // here is where im going to want to add the isService var to make sure there is an actual service. 
                         if (reqCar == true)
                         {
-                            Log("Service has been requested from SiteWatch");
+                            //Log("Service has been requested from SiteWatch");
 
                             while (true)
                             {
@@ -748,7 +748,7 @@ namespace WashEntrance_V1
                                 err = SeaDACLite1_DeviceHandler.SM_WriteDigitalOutputs(3, 1, SeaDac1_Output);
                                 LogErrorOutput(err, "SeaLevelThread");
 
-                                if (SD1_input4_is_Service == false)
+                                /*if (SD1_input4_is_Service == false)
                                 {
                                     err = SeaDACLite1_DeviceHandler.SM_ReadDigitalInputs(3, 1, SeaDac1_Input);
                                     LogErrorInput(err, "SeaLevelThread");
@@ -758,7 +758,7 @@ namespace WashEntrance_V1
                                     {
                                         Log("Service in TW");
                                     }
-                                }
+                                }*/
                                 
                                 lock (lockObj_extraRollerBtn)
                                 {
@@ -769,7 +769,7 @@ namespace WashEntrance_V1
                                     }
                                 }
 
-                                if (CarInPosition(SeaDACLite2_DeviceHandler, SeaDac2_Input) == true && SD1_input4_is_Service == true)
+                                if (CarInPosition(SeaDACLite2_DeviceHandler, SeaDac2_Input) == true)
                                 {
                                     Log("Car is in position");
                                     in_position = true;
@@ -777,7 +777,7 @@ namespace WashEntrance_V1
                                     Thread.Sleep(SLEEP_DURATION_MS * 2);
                                     break;
                                 }
-                                else if (manualPgm == true && SD1_input4_is_Service == true)
+                                else if (manualPgm == true)
                                 {
                                     in_position = true;
                                     switch_case = 0;
