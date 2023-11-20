@@ -28,7 +28,6 @@ namespace WashEntrance_V1
         bool audio = false;
 
         private Thread SeaLevelBackground;
-        private int password = 5680;
 
         public Form1()
         {
@@ -61,8 +60,8 @@ namespace WashEntrance_V1
             else { radRollerEye.Checked = false; }
 
             //SeaLevel Device 1 inputs
-            if (SeaLevelThread.SD1_input1_pgmCar) { radPgmCar.Checked = true; }
-            else { radPgmCar.Checked = false; }
+            //if (SeaLevelThread.SD1_input1_pgmCar) { radPgmCar.Checked = true; }
+            //else { radPgmCar.Checked = false; }
 
             if (SeaLevelThread.SD1_input2_pgmCarButton) { radBtnExtraRoller.Checked = true; }
             else { radBtnExtraRoller.Checked = false; }
@@ -120,18 +119,20 @@ namespace WashEntrance_V1
             {
                 Shutdown = true;
 
+                Logger.LogThreadTermination(SeaLevelBackground);
                 while (true)
-                {
-                    Logger.LogThreadTermination(SeaLevelBackground);
-                    bool joined = SeaLevelBackground.Join(2000);
+                {    
+                    bool joined = SeaLevelBackground.Join(100);
 
                     if (joined == true)
                     {
+                        Logger.LogThreadTermination(SeaLevelBackground);
                         break;
                     }
                     else
                     {
-                        Thread.Sleep(1000);
+                        Logger.LogThreadTermination(SeaLevelBackground);
+                        Thread.Sleep(1500);
                     }
                 }
                 try
@@ -143,7 +144,7 @@ namespace WashEntrance_V1
                 }
                 catch (Exception ex)
                 {
-                    Logger.WriteLog($"Exception : SeaLevelBackground.Abort() - Error aborting thread.");
+                    Logger.WriteLog($"Exception : SeaLevelBackground.Abort() - Error aborting thread. {ex}");
                 }
                 
                 Application.Exit();
@@ -418,15 +419,12 @@ namespace WashEntrance_V1
                                                                     MessageBoxButtons.OK);
                         if (exit == DialogResult.OK)
                         {
-                            Thread.Sleep(2000);
+                            Thread.Sleep(1000);
                             btnExit.PerformClick();
                         }
-                        //Thread.Sleep(5000);
-                        //btnExit.PerformClick();
                     }
                     else
                     {
-                        Logger.WriteLog("Attempting to end SeaLevelBackGround Thread....");
                         timeout++;
                         Thread.Sleep(500);
                     }

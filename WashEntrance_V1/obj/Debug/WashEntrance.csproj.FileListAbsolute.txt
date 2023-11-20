@@ -192,3 +192,28 @@ C:\Users\David\source\repos\WashEntrance\WashEntrance_V1\obj\Debug\WashEntrance.
 C:\Users\David\source\repos\WashEntrance\WashEntrance_V1\obj\Debug\WashEntrance_V1.exe
 C:\Users\David\source\repos\WashEntrance\WashEntrance_V1\obj\Debug\WashEntrance_V1.pdb
 C:\Users\David\source\repos\WashEntrance\WashEntrance_V1\bin\Debug\SeaMAX Dot Net.dll
+C:\Users\dfinl\Source\Repos\WashEntrance\WashEntrance_V1\bin\Debug\SeaMAX.dll
+C:\Users\dfinl\Source\Repos\WashEntrance\WashEntrance_V1\bin\Debug\ftd2xx.dll
+C:\Users\dfinl\Source\Repos\WashEntrance\WashEntrance_V1\bin\Debug\Logo.ico
+C:\Users\dfinl\Source\Repos\WashEntrance\WashEntrance_V1\bin\Debug\WashEntrance_V1.exe.config
+C:\Users\dfinl\Source\Repos\WashEntrance\WashEntrance_V1\bin\Debug\WashEntrance_V1.exe.manifest
+C:\Users\dfinl\Source\Repos\WashEntrance\WashEntrance_V1\bin\Debug\WashEntrance_V1.application
+C:\Users\dfinl\Source\Repos\WashEntrance\WashEntrance_V1\bin\Debug\WashEntrance_V1.exe
+C:\Users\dfinl\Source\Repos\WashEntrance\WashEntrance_V1\bin\Debug\WashEntrance_V1.pdb
+C:\Users\dfinl\Source\Repos\WashEntrance\WashEntrance_V1\bin\Debug\SeaMAX Dot Net.dll
+C:\Users\dfinl\Source\Repos\WashEntrance\WashEntrance_V1\bin\Debug\System.ValueTuple.dll
+C:\Users\dfinl\Source\Repos\WashEntrance\WashEntrance_V1\bin\Debug\SeaMAX Dot Net.xml
+C:\Users\dfinl\Source\Repos\WashEntrance\WashEntrance_V1\bin\Debug\System.ValueTuple.xml
+C:\Users\dfinl\Source\Repos\WashEntrance\WashEntrance_V1\obj\Debug\WashEntrance.csproj.AssemblyReference.cache
+C:\Users\dfinl\Source\Repos\WashEntrance\WashEntrance_V1\obj\Debug\Interop.IWshRuntimeLibrary.dll
+C:\Users\dfinl\Source\Repos\WashEntrance\WashEntrance_V1\obj\Debug\WashEntrance.csproj.ResolveComReference.cache
+C:\Users\dfinl\Source\Repos\WashEntrance\WashEntrance_V1\obj\Debug\WashEntrance_V1.Form1.resources
+C:\Users\dfinl\Source\Repos\WashEntrance\WashEntrance_V1\obj\Debug\WashEntrance_V1.Properties.Resources.resources
+C:\Users\dfinl\Source\Repos\WashEntrance\WashEntrance_V1\obj\Debug\WashEntrance_V1.TestForm.resources
+C:\Users\dfinl\Source\Repos\WashEntrance\WashEntrance_V1\obj\Debug\WashEntrance.csproj.GenerateResource.cache
+C:\Users\dfinl\Source\Repos\WashEntrance\WashEntrance_V1\obj\Debug\WashEntrance.csproj.CoreCompileInputs.cache
+C:\Users\dfinl\Source\Repos\WashEntrance\WashEntrance_V1\obj\Debug\WashEntrance_V1.exe.manifest
+C:\Users\dfinl\Source\Repos\WashEntrance\WashEntrance_V1\obj\Debug\WashEntrance_V1.application
+C:\Users\dfinl\Source\Repos\WashEntrance\WashEntrance_V1\obj\Debug\WashEntrance.csproj.CopyComplete
+C:\Users\dfinl\Source\Repos\WashEntrance\WashEntrance_V1\obj\Debug\WashEntrance_V1.exe
+C:\Users\dfinl\Source\Repos\WashEntrance\WashEntrance_V1\obj\Debug\WashEntrance_V1.pdb

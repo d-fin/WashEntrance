@@ -107,50 +107,48 @@ namespace WashEntrance_V1
         {
             try
             {
-                do
-                {
-                    int errno = SeaMAX_DeviceHandler.SM_Open("SeaDAC Lite 0");
-                    if (errno == 0)
-                    {
-                        Logger.WriteLog("Successfully Connected to SeaDAC Lite 0");
-                        return true;
-                    }
 
-                    else if (errno < 0)
+                int errno = SeaMAX_DeviceHandler.SM_Open("SeaDAC Lite 0");
+                if (errno == 0)
+                {
+                    Logger.WriteLog("Successfully Connected to SeaDAC Lite 0");
+                    return true;
+                }
+
+                else if (errno < 0)
+                {
+                    switch (errno)
                     {
-                        switch (errno)
-                        {
-                            case -1:
-                                Logger.WriteLog($"SeaDAC Lite Error # : {errno} - Parameter Connection is null. ");
-                                break;
-                            case -2:
-                                Logger.WriteLog($"SeaDAC Lite Error # : {errno} - Could not determine connection type.");
-                                break;
-                            case -3:
-                                Logger.WriteLog($"SeaDAC Lite Error # : {errno} - Invalid connection string.");
-                                break;
-                            case -30:
-                                Logger.WriteLog($"SeaDAC Lite Error # : {errno} - SeaDAC Lite: Invalid or unavailable port.");
-                                break;
-                            case -31:
-                                Logger.WriteLog($"SeaDAC Lite Error # : {errno} - SeaDAC Lite: Unable to acquire a valid mutex handle.");
-                                break;
-                            case -32:
-                                Logger.WriteLog($"SeaDAC Lite Error # : {errno} - SeaDAC Lite: Invalid device number (should be zero or greater). Object invalid.");
-                                break;
-                            case -33:
-                                Logger.WriteLog($"SeaDAC Lite Error # : {errno} - SeaDAC Lite: Could not read vendor ID.");
-                                break;
-                            case -34:
-                                Logger.WriteLog($"SeaDAC Lite Error # : {errno} - SeaDAC Lite: Could not read Product ID.");
-                                break;
-                            default:
-                                Logger.WriteLog($"SeaDAC Lite Error # : {errno}");
-                                break;
-                        }
+                        case -1:
+                            Logger.WriteLog($"SeaDAC Lite Error # : {errno} - Parameter Connection is null. ");
+                            break;
+                        case -2:
+                            Logger.WriteLog($"SeaDAC Lite Error # : {errno} - Could not determine connection type.");
+                            break;
+                        case -3:
+                            Logger.WriteLog($"SeaDAC Lite Error # : {errno} - Invalid connection string.");
+                            break;
+                        case -30:
+                            Logger.WriteLog($"SeaDAC Lite Error # : {errno} - SeaDAC Lite: Invalid or unavailable port.");
+                            break;
+                        case -31:
+                            Logger.WriteLog($"SeaDAC Lite Error # : {errno} - SeaDAC Lite: Unable to acquire a valid mutex handle.");
+                            break;
+                        case -32:
+                            Logger.WriteLog($"SeaDAC Lite Error # : {errno} - SeaDAC Lite: Invalid device number (should be zero or greater). Object invalid.");
+                            break;
+                        case -33:
+                            Logger.WriteLog($"SeaDAC Lite Error # : {errno} - SeaDAC Lite: Could not read vendor ID.");
+                            break;
+                        case -34:
+                            Logger.WriteLog($"SeaDAC Lite Error # : {errno} - SeaDAC Lite: Could not read Product ID.");
+                            break;
+                        default:
+                            Logger.WriteLog($"SeaDAC Lite Error # : {errno}");
+                            break;
                     }
-                    Thread.Sleep(1000);
-                } while (true);
+                }
+                return false; 
             }
             catch (Exception e)
             {
@@ -356,16 +354,16 @@ namespace WashEntrance_V1
             Reset waits for a flag from the TunnelWatch Box. The reset is triggered 4 feet after the front of the vehicle trips the head switch.
             Once the flag is triggered, all variables are reset and all form C relays are turned off. (means a vehicle may pull in now that the vehicle in front is safely moving through wash). 
         */
-        private static bool Reset(SeaMAX SeaDac1_DeviceHandler, SeaMAX SeaDac2_DeviceHandler, byte[] input1, byte[] input2, byte[] output1, byte[] output2)
+        private static bool Reset(SeaMAX SeaDac2_DeviceHandler)
         {
             try
             {
+                byte[] output = new byte[1];
                 Thread.Sleep(SLEEP_DURATION_MS * 10);
 
-                output1[0] = 0;
-                output2[0] = 0;
+                output[0] = 0;
 
-                int err = SeaDac2_DeviceHandler.SM_WriteDigitalOutputs(0, 4, output2);
+                int err = SeaDac2_DeviceHandler.SM_WriteDigitalOutputs(0, 4, output);
                 LogErrorOutput(err, "Reset");
 
                 in_position = false;
@@ -563,28 +561,24 @@ namespace WashEntrance_V1
             }
         }
 
-        private static void ExitThreads(SeaMAX SeaDacLite1_DeviceHandler, SeaMAX SeaDacLite2_DeviceHandler, Thread extraRollerButton, Thread resetMonitor)
+        private static void ExitThreads(SeaMAX SD1_DeviceHandler, SeaMAX SD2_DeviceHandler, Thread extraRollerButton, Thread resetMonitor)
         {
             byte[] output = new byte[1];
             int err;
             output[0] = 0;
-            
-            byte[] input1 = new byte[1];
-            byte[] input2 = new byte[1];
-            byte[] output1 = new byte[1];
-            byte[] output2 = new byte[1];
+
             try
             {
-                bool reset = Reset(SeaDacLite1_DeviceHandler, SeaDacLite2_DeviceHandler, input1, input2, output1, output2);
+                bool reset = Reset(SD2_DeviceHandler);
                 endThreads = true;
                 exiting = true;
-                err = SeaDacLite2_DeviceHandler.SM_WriteDigitalOutputs(0, 4, output);
+                err = SD2_DeviceHandler.SM_WriteDigitalOutputs(0, 4, output);
                 LogErrorOutput(err, "SeaLevelThread");
             
-                err = SeaDacLite1_DeviceHandler.SM_WriteDigitalOutputs(0, 4, output);
+                err = SD1_DeviceHandler.SM_WriteDigitalOutputs(0, 4, output);
                 LogErrorOutput(err, "SeaLevelThread");
 
-                err = SeaDacLite1_DeviceHandler.SM_Close();
+                err = SD1_DeviceHandler.SM_Close();
                 if (err == 0)
                 {
                     Logger.WriteLog($"SeaDAC Lite 1 Closed succesfully.");
@@ -595,7 +589,7 @@ namespace WashEntrance_V1
                     Logger.WriteLog($"Error closing SeaDAC Lite 1");
                 }
             
-                err = SeaDacLite2_DeviceHandler.SM_Close();
+                err = SD2_DeviceHandler.SM_Close();
                 if (err == 0)
                 {
                     Logger.WriteLog($"SeaDAC Lite 2 Closed succesfully.");
@@ -607,6 +601,7 @@ namespace WashEntrance_V1
                 }
 
                 Logger.WriteLog("Attempting to end extra roller and reset threads....");
+
                 bool threadsJoined = false; 
                 while (threadsJoined == false)
                 {
@@ -644,14 +639,11 @@ namespace WashEntrance_V1
         public static void SeaLevelTask()
         {
             // local variables 
-            SeaMAX SeaDACLite1_DeviceHandler = new SeaMAX();
-            SeaMAX SeaDACLite2_DeviceHandler = new SeaMAX();
+            SeaMAX SD1_DeviceHandler = new SeaMAX();
+            SeaMAX SD2_DeviceHandler = new SeaMAX();
 
-            byte[] SeaDac1_Input = new byte[1];
-            byte[] SeaDac2_Input = new byte[1];
-
-            byte[] SeaDac1_Output = new byte[1];
-            byte[] SeaDac2_Output = new byte[1];
+            byte[] input = new byte[1];
+            byte[] output = new byte[1];
 
             int switch_case = -1;
             int err;
@@ -660,37 +652,43 @@ namespace WashEntrance_V1
 
             while (true)
             {
-                seaDAC1 = SeaDACLiteConnect(SeaDACLite1_DeviceHandler);
-                seaDAC2 = SeaDACLiteConnect(SeaDACLite2_DeviceHandler);
-                
+                //seaDAC1 = SeaDACLiteConnect(SD1_DeviceHandler);
+                //seaDAC2 = SeaDACLiteConnect(SD2_DeviceHandler);
+                seaDAC1 = true; 
+                seaDAC2 = true;
                 if (seaDAC1 && seaDAC2)
                 {
                     break;
+                }
+                else if (Form1.Shutdown == true)
+                {
+                    Application.Exit();
                 }
             }
 
             /*
                 Threads below are used for monitoring the extra roller button, looking for the reset flag from TW box, and making sure the SeaDACs are always connected. 
             */
-            Thread extraRollerButton = new Thread(() => MonitorExtraRollerBtn(SeaDACLite1_DeviceHandler));
-            Thread resetMonitor = new Thread(() => MonitorReset(SeaDACLite1_DeviceHandler));
-            
+
+            Thread extraRollerButton = new Thread(() => MonitorExtraRollerBtn(SD1_DeviceHandler));
+            Thread resetMonitor = new Thread(() => MonitorReset(SD1_DeviceHandler));
+
             extraRollerButton.Start();
             resetMonitor.Start();
-            
+
             extraRollerButton.Name = "ExtraRollerBtnThread";
             resetMonitor.Name = "MonitorResetThread";
-            
+
             Logger.LogThreadCreation(extraRollerButton);
             Logger.LogThreadCreation(resetMonitor);
 
+
             try
             {
-                SeaDac2_Output[0] = 0;
-                SeaDac1_Output[0] = 0;
-                err = SeaDACLite2_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaDac2_Output);
+                output[0] = 0;
+                err = SD2_DeviceHandler.SM_WriteDigitalOutputs(0, 4, output);
                 LogErrorOutput(err, "SeaLevelThread");
-                err = SeaDACLite1_DeviceHandler.SM_WriteDigitalOutputs(0, 4, SeaDac1_Output);
+                err = SD1_DeviceHandler.SM_WriteDigitalOutputs(0, 4, output);
                 LogErrorOutput(err, "SeaLevelThread");
 
                 while (exiting == false)
@@ -701,15 +699,15 @@ namespace WashEntrance_V1
 
                     if (Form1.Shutdown == true || Form1.testing == true)
                     {
-                        ExitThreads(SeaDACLite1_DeviceHandler, SeaDACLite2_DeviceHandler, extraRollerButton, resetMonitor);
+                        ExitThreads(SD1_DeviceHandler, SD2_DeviceHandler, extraRollerButton, resetMonitor);
                     }
 
                     if (!seaDAC1 || !seaDAC2)
                     {
                         while (true)
                         {
-                            seaDAC1 = SeaDACLiteConnect(SeaDACLite1_DeviceHandler);
-                            seaDAC2 = SeaDACLiteConnect(SeaDACLite2_DeviceHandler);
+                            seaDAC1 = SeaDACLiteConnect(SD1_DeviceHandler);
+                            seaDAC2 = SeaDACLiteConnect(SD2_DeviceHandler);
                             if (seaDAC1 && seaDAC2)
                             {
                                 break;
@@ -723,9 +721,9 @@ namespace WashEntrance_V1
                         bool reqCar = false;
                         bool manualPgm = false;
 
-                        err = SeaDACLite2_DeviceHandler.SM_ReadDigitalInputs(0, 2, SeaDac2_Input);
+                        err = SD2_DeviceHandler.SM_ReadDigitalInputs(0, 2, input);
                         LogErrorOutput(err, "SeaLevelThread");
-                        reqCar = GetBit(SeaDac2_Input[0], 1);
+                        reqCar = GetBit(input[0], 1);
 
                         lock (lockObj_extraRollerBtn)
                         {
@@ -739,34 +737,18 @@ namespace WashEntrance_V1
 
                         if (Form1.Shutdown == true || Form1.testing == true || Form1.resetButton == true)
                         {
-                            ExitThreads(SeaDACLite1_DeviceHandler, SeaDACLite2_DeviceHandler, extraRollerButton, resetMonitor);
+                            ExitThreads(SD1_DeviceHandler, SD2_DeviceHandler, extraRollerButton, resetMonitor);
                         }
 
                         // here is where im going to want to add the isService var to make sure there is an actual service. 
                         if (reqCar == true)
                         {
-                            //Log("Service has been requested from SiteWatch");
-
                             while (true)
                             {
-                                // below is where I write out to reqCar and this is where I want to add the is_Service check 
-                                // I only want to program a car if there is an actual service so I need to monitor if there is a service 
-                                // being sent to tunnelwatch from sitewatch.
-                                SeaDac1_Output[0] = 1;
-                                err = SeaDACLite1_DeviceHandler.SM_WriteDigitalOutputs(3, 1, SeaDac1_Output);
+                               
+                                output[0] = 1;
+                                err = SD1_DeviceHandler.SM_WriteDigitalOutputs(3, 1, output);
                                 LogErrorOutput(err, "SeaLevelThread");
-
-                                /*if (SD1_input4_is_Service == false)
-                                {
-                                    err = SeaDACLite1_DeviceHandler.SM_ReadDigitalInputs(3, 1, SeaDac1_Input);
-                                    LogErrorInput(err, "SeaLevelThread");
-                                    SD1_input4_is_Service = GetBit(SeaDac1_Input[0], 3);
-
-                                    if (SD1_input4_is_Service == true)
-                                    {
-                                        Log("Service in TW");
-                                    }
-                                }*/
                                 
                                 lock (lockObj_extraRollerBtn)
                                 {
@@ -777,9 +759,8 @@ namespace WashEntrance_V1
                                     }
                                 }
 
-                                if (CarInPosition(SeaDACLite2_DeviceHandler, SeaDac2_Input) == true)
+                                if (CarInPosition(SD2_DeviceHandler, input) == true)
                                 {
-                                    //Log("Car is in position");
                                     in_position = true;
                                     switch_case = 0;
                                     Thread.Sleep(SLEEP_DURATION_MS * 2);
@@ -819,7 +800,7 @@ namespace WashEntrance_V1
 
                             if (SD2_output2_signs == false)
                             {
-                                signsChanged = ChangeSigns(SeaDACLite2_DeviceHandler, SeaDac2_Output);
+                                signsChanged = ChangeSigns(SD2_DeviceHandler, output);
                                 Thread.Sleep(SLEEP_DURATION_MS * 20);
                             }
 
@@ -833,7 +814,7 @@ namespace WashEntrance_V1
                                 case 0:
                                     if (carMoving == false)
                                     {
-                                        carMoving = RollerMonitoring(SeaDACLite2_DeviceHandler, SeaDac2_Input, SeaDac2_Output);
+                                        carMoving = RollerMonitoring(SD2_DeviceHandler, input, output);
                                     }
                                     else if (signsChanged == true && carMoving == true)
                                     {
@@ -848,17 +829,13 @@ namespace WashEntrance_V1
                                     break;
 
                                 case 1:
-                                    SeaDac1_Output[0] = 0;
-                                    err = SeaDACLite1_DeviceHandler.SM_WriteDigitalOutputs(3, 1, SeaDac1_Output);
+                                    output[0] = 0;
+                                    err = SD1_DeviceHandler.SM_WriteDigitalOutputs(3, 1, output);
                                     LogErrorOutput(err, "SeaLevelThread");
 
                                     if (resetTriggered == true)
                                     {
-                                        reset = Reset(SeaDACLite1_DeviceHandler, SeaDACLite2_DeviceHandler, SeaDac1_Input, SeaDac2_Input, SeaDac1_Output, SeaDac2_Output);
-                                        /*if (reset == true)
-                                        {
-                                            Log("Reset = true");
-                                        }*/
+                                        reset = Reset(SD2_DeviceHandler);
                                     }
 
                                     lock (lockObj_extraRollerBtn)

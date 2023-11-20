@@ -65,11 +65,11 @@ namespace WashEntrance_V1
 
         public static void LogThreadCreation(Thread thread)
         {
-            string logMessage = $"Thread Creation" +
-                                $"\tThread ID: {thread.ManagedThreadId}\n" +
-                                $"\tThread Name: {thread.Name ?? "N/A"}\n" +
-                                $"\tStart Time: {DateTime.Now}\n" +
-                                $"\tThread State: {thread.ThreadState}\n";
+            string logMessage = $"Thread Creation\n" +
+                                $"\t\t\tThread ID: {thread.ManagedThreadId}\n" +
+                                $"\t\t\tThread Name: {thread.Name ?? "N/A"}\n" +
+                                $"\t\t\tStart Time: {DateTime.Now}\n" +
+                                $"\t\t\tThread State: {thread.ThreadState}\n";
                               
 
             WriteLog(logMessage);
@@ -77,11 +77,11 @@ namespace WashEntrance_V1
 
         public static void LogThreadTermination(Thread thread)
         {
-            string logMessage = $"Thread Termination" +
-                                $"\tThread ID: {thread.ManagedThreadId}\n" +
-                                $"\tThread Name: {thread.Name ?? "N/A"}\n" +
-                                $"\tTermination Time: {DateTime.Now}\n" +
-                                $"\tThread State: {thread.ThreadState}";
+            string logMessage = $"Thread Termination\n" +
+                                $"\t\t\tThread ID: {thread.ManagedThreadId}\n" +
+                                $"\t\t\tThread Name: {thread.Name ?? "N/A"}\n" +
+                                $"\t\t\tTermination Time: {DateTime.Now}\n" +
+                                $"\t\t\tThread State: {thread.ThreadState}";
                                 
 
             WriteLog(logMessage);
