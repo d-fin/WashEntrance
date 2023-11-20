@@ -65,24 +65,24 @@ namespace WashEntrance_V1
 
         public static void LogThreadCreation(Thread thread)
         {
-            string logMessage = $"\n--------------------------------------------------\n" +
-                                $"Thread ID: {thread.ManagedThreadId}\n" +
-                                $"Thread Name: {thread.Name ?? "N/A"}\n" +
-                                $"Start Time: {DateTime.Now}\n" +
-                                $"Thread State: {thread.ThreadState}\n" +
-                                $"--------------------------------------------------" ;
+            string logMessage = $"Thread Creation" +
+                                $"\tThread ID: {thread.ManagedThreadId}\n" +
+                                $"\tThread Name: {thread.Name ?? "N/A"}\n" +
+                                $"\tStart Time: {DateTime.Now}\n" +
+                                $"\tThread State: {thread.ThreadState}\n";
+                              
 
             WriteLog(logMessage);
         }
 
         public static void LogThreadTermination(Thread thread)
         {
-            string logMessage = $"\n--------------------------------------------------\n" + 
-                                $"Thread ID: {thread.ManagedThreadId}\n" +
-                                $"Thread Name: {thread.Name ?? "N/A"}\n" +
-                                $"Termination Time: {DateTime.Now}\n" +
-                                $"Thread State: {thread.ThreadState}\n" +
-                                $"--------------------------------------------------";
+            string logMessage = $"Thread Termination" +
+                                $"\tThread ID: {thread.ManagedThreadId}\n" +
+                                $"\tThread Name: {thread.Name ?? "N/A"}\n" +
+                                $"\tTermination Time: {DateTime.Now}\n" +
+                                $"\tThread State: {thread.ThreadState}";
+                                
 
             WriteLog(logMessage);
         }
@@ -90,7 +90,7 @@ namespace WashEntrance_V1
         public static void DeleteOldLines()
         {
             string logPath = ConfigurationManager.AppSettings["logPath"];
-            int keepLines = 2000;
+            int keepLines = 10000;
 
             try
             {

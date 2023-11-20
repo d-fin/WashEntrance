@@ -19,19 +19,19 @@ namespace WashEntrance_V1
         public static bool seaDAC1 = false;
         public static bool seaDAC2 = false;
 
-        // all inputs are 10 - 24 VDC 
+        // inputs
         public static bool SD2_input1_sonar = false;  // sonar - 24VDC
         public static bool SD2_input2_tireEye = false;  // tire eye - 24VDC 
         public static bool SD2_input3_rollerEye = false;  // roller eye - 24VDC 
 
-        public static bool SD1_input1_pgmCar = false;  // program car - 24 VAC NO LONGER BEING USED
+        //public static bool SD1_input1_pgmCar = false;  // program car - 24 VAC NO LONGER BEING USED
         public static bool SD1_input1_pgmCarTW = false; 
         public static bool SD1_input2_pgmCarButton = false; // extra roller button inside store - 24VAC
         public static bool SD1_input3_resetSigns = false; // reset flag / hold - 24VAC
         public static bool SD1_input4_is_Service = false; // only program a car if SW is sending a service to TW 
 
 
-        // outputs are Form C Relays, voltage output is 10-24 VDC from common, except fork solenoid is 120VAC
+        // outputs (Form C Relays)
         public static bool SD2_output1_audio = false; // audio
         public static bool SD2_output2_signs = false; // stop sign & go sign (N/O = closed, N/C = go)
         public static bool SD2_output3_forkSolenoid = false; // fork solenoid
@@ -369,7 +369,7 @@ namespace WashEntrance_V1
                 LogErrorOutput(err, "Reset");
 
                 in_position = false;
-                SD1_input1_pgmCar = false;
+                //SD1_input1_pgmCar = false;
                 SD1_input2_pgmCarButton = false;
                 SD1_input3_resetSigns = false;
                 //SD1_input4_is_Service = false; 
@@ -621,6 +621,14 @@ namespace WashEntrance_V1
                             threadsJoined = true;
                             Logger.WriteLog("extra roller and reset threads joined.");
                         }
+                        else if (x == true)
+                        {
+                            Logger.WriteLog("extra roller thread joined.");
+                        }
+                        else if (y == true)
+                        {
+                            Logger.WriteLog("reset thread joined.");
+                        }
                     }
                 }
             }
@@ -771,7 +779,7 @@ namespace WashEntrance_V1
 
                                 if (CarInPosition(SeaDACLite2_DeviceHandler, SeaDac2_Input) == true)
                                 {
-                                    Log("Car is in position");
+                                    //Log("Car is in position");
                                     in_position = true;
                                     switch_case = 0;
                                     Thread.Sleep(SLEEP_DURATION_MS * 2);
@@ -847,10 +855,10 @@ namespace WashEntrance_V1
                                     if (resetTriggered == true)
                                     {
                                         reset = Reset(SeaDACLite1_DeviceHandler, SeaDACLite2_DeviceHandler, SeaDac1_Input, SeaDac2_Input, SeaDac1_Output, SeaDac2_Output);
-                                        if (reset == true)
+                                        /*if (reset == true)
                                         {
                                             Log("Reset = true");
-                                        }
+                                        }*/
                                     }
 
                                     lock (lockObj_extraRollerBtn)

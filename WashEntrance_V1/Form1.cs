@@ -134,7 +134,18 @@ namespace WashEntrance_V1
                         Thread.Sleep(1000);
                     }
                 }
-
+                try
+                {
+                    if (SeaLevelBackground.ThreadState != ThreadState.Stopped)
+                    {
+                        SeaLevelBackground.Abort();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.WriteLog($"Exception : SeaLevelBackground.Abort() - Error aborting thread.");
+                }
+                
                 Application.Exit();
             }
         }
@@ -402,15 +413,20 @@ namespace WashEntrance_V1
                     }
                     else if (timeout == 100)
                     {
-                        MessageBox.Show("Error Resetting, The application will close - please restart.",
+                        DialogResult exit = MessageBox.Show("Error Resetting, exit the application and restart.",
                                                                     "Reset Error",
                                                                     MessageBoxButtons.OK);
-                        Thread.Sleep(5000);
-                        btnExit.PerformClick();
+                        if (exit == DialogResult.OK)
+                        {
+                            Thread.Sleep(2000);
+                            btnExit.PerformClick();
+                        }
+                        //Thread.Sleep(5000);
+                        //btnExit.PerformClick();
                     }
                     else
                     {
-                        Logger.WriteLog("SeaLevelBackGround Thread ending failed....");
+                        Logger.WriteLog("Attempting to end SeaLevelBackGround Thread....");
                         timeout++;
                         Thread.Sleep(500);
                     }
