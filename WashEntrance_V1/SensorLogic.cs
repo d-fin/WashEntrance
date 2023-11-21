@@ -652,10 +652,9 @@ namespace WashEntrance_V1
 
             while (true)
             {
-                //seaDAC1 = SeaDACLiteConnect(SD1_DeviceHandler);
-                //seaDAC2 = SeaDACLiteConnect(SD2_DeviceHandler);
-                seaDAC1 = true; 
-                seaDAC2 = true;
+                seaDAC1 = SeaDACLiteConnect(SD1_DeviceHandler);
+                seaDAC2 = SeaDACLiteConnect(SD2_DeviceHandler);
+               
                 if (seaDAC1 && seaDAC2)
                 {
                     break;
